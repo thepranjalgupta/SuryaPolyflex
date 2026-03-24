@@ -66,6 +66,16 @@ public class AuthController : Controller
         return View(model);
     }
 
+
+// To use permissions on any controller going forward, you simply do this:
+// [RequirePermission(Permissions.Departments.View)]
+// public IActionResult Index() { ... }
+    [HttpGet]
+public IActionResult AccessDenied()
+{
+    return View();
+}
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
@@ -73,4 +83,5 @@ public class AuthController : Controller
         await _signInManager.SignOutAsync();
         return RedirectToAction("Login");
     }
+    
 }

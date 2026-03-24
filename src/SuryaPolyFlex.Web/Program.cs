@@ -1,13 +1,25 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SuryaPolyFlex.Application.Common.Interfaces;
 using SuryaPolyFlex.Domain.Entities.Core;
 using SuryaPolyFlex.Infrastructure.Data;
+using SuryaPolyFlex.Infrastructure.Services;
+using SuryaPolyFlex.Application.Features.Departments;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// HttpContext accessor (needed by audit interceptor)
+builder.Services.AddHttpContextAccessor();
+
+// Audit interceptor
+builder.Services.AddScoped<AuditInterceptor>();
+
 // Database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddInterceptors(sp.GetRequiredService<AuditInterceptor>());
+});
 
 // Identity
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
@@ -23,12 +35,18 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+// Application services
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
+
 // MVC
 builder.Services.AddControllersWithViews();
 
+
 var app = builder.Build();
 
-// ── Run Seeder ────────────────────────────────────────────────────
+// Seed data
 using (var scope = app.Services.CreateScope())
 {
     var services    = scope.ServiceProvider;
