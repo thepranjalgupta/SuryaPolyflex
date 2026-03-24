@@ -1,0 +1,10 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h2>Welcome to SuryaPolyFlex ERP</h2>
+<p>Logged in as: <strong>@User.Identity?.Name</strong></p>
+
+<form asp-controller="Auth" asp-action="Logout" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Logout</button>
+</form>
