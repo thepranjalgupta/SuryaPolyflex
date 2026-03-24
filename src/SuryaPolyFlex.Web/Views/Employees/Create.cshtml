@@ -1,0 +1,65 @@
+@model SuryaPolyFlex.Application.Features.Employees.CreateEmployeeDto
+@{ ViewData["Title"] = "Add Employee"; }
+
+<div class="card shadow-sm mx-auto" style="max-width:560px">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Add Employee</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="EmployeeCode" class="form-label fw-semibold">
+                        Employee Code <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="EmployeeCode" class="form-control" placeholder="e.g. EMP001" />
+                    <span asp-validation-for="EmployeeCode" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FullName" class="form-label fw-semibold">
+                        Full Name <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Designation" class="form-label fw-semibold">Designation</label>
+                    <input asp-for="Designation" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="DepartmentId" class="form-label fw-semibold">
+                        Department <span class="text-danger">*</span>
+                    </label>
+                    <select asp-for="DepartmentId" asp-items="ViewBag.Departments"
+                            class="form-select">
+                        <option value="">-- Select Department --</option>
+                    </select>
+                    <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label fw-semibold">Email</label>
+                    <input asp-for="Email" class="form-control" type="email" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Phone" class="form-label fw-semibold">Phone</label>
+                    <input asp-for="Phone" class="form-control" />
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />

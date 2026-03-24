@@ -5,6 +5,8 @@ using SuryaPolyFlex.Domain.Entities.Core;
 using SuryaPolyFlex.Infrastructure.Data;
 using SuryaPolyFlex.Infrastructure.Services;
 using SuryaPolyFlex.Application.Features.Departments;
+using SuryaPolyFlex.Application.Features.Employees;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 // Application services
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
 
 
 // MVC

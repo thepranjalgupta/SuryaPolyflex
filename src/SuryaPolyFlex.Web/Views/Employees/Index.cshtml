@@ -1,0 +1,92 @@
+@model List<SuryaPolyFlex.Application.Features.Employees.EmployeeDto>
+@{ ViewData["Title"] = "Employees"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Employees</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ Add Employee</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="get" class="d-flex gap-2 mb-3">
+            <input type="text" name="search" value="@ViewBag.Search"
+                   class="form-control form-control-sm w-25"
+                   placeholder="Search name, code or email..." />
+            <button class="btn btn-sm btn-outline-secondary">Search</button>
+            @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+            {
+                <a asp-action="Index" class="btn btn-sm btn-outline-danger">Clear</a>
+            }
+        </form>
+
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th style="width:120px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center text-muted">No employees found.</td></tr>
+                }
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td><span class="badge bg-secondary">@e.EmployeeCode</span></td>
+                        <td class="fw-semibold">@e.FullName</td>
+                        <td class="text-muted small">@e.Designation</td>
+                        <td>@e.DepartmentName</td>
+                        <td class="small">@e.Email</td>
+                        <td class="small">@e.Phone</td>
+                        <td>
+                            @if (e.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@e.Id"
+                               class="btn btn-sm btn-outline-primary">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@e.Id"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this employee?')">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
