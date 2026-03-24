@@ -1,0 +1,6 @@
+@SuryaPolyFlex.API_HostAddress = http://localhost:5209
+
+GET {{SuryaPolyFlex.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
