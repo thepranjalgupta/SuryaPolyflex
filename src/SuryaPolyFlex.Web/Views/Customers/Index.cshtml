@@ -1,0 +1,71 @@
+@model List<SuryaPolyFlex.Application.Features.Customers.CustomerDto>
+@{ ViewData["Title"] = "Customers"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Customers</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ Add Customer</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="get" class="d-flex gap-2 mb-3">
+            <input type="text" name="search" value="@ViewBag.Search"
+                   class="form-control form-control-sm w-25" placeholder="Search name, code, GSTIN..." />
+            <button class="btn btn-sm btn-outline-secondary">Search</button>
+            @if (!string.IsNullOrEmpty(ViewBag.Search as string))
+            {
+                <a asp-action="Index" class="btn btn-sm btn-outline-danger">Clear</a>
+            }
+        </form>
+
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Code</th><th>Name</th><th>Contact</th>
+                    <th>Mobile</th><th>City</th><th>GSTIN</th>
+                    <th>Credit Limit</th><th>Status</th><th style="width:110px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="9" class="text-center text-muted">No customers found.</td></tr>
+                }
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td><span class="badge bg-secondary">@c.CustomerCode</span></td>
+                        <td class="fw-semibold">@c.Name</td>
+                        <td class="small">@c.ContactPerson</td>
+                        <td class="small">@c.Mobile</td>
+                        <td class="small">@c.City</td>
+                        <td class="small">@c.GSTIN</td>
+                        <td class="small">₹@c.CreditLimit.ToString("N0")</td>
+                        <td>
+                            <span class="badge @(c.IsActive ? "bg-success" : "bg-danger")">
+                                @(c.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@c.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this customer?')">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-danger">Del</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SuryaPolyFlex.Domain.Entities.Core;
+using SuryaPolyFlex.Domain.Entities.Inventory;
 
 namespace SuryaPolyFlex.Infrastructure.Data;
 
@@ -86,6 +87,43 @@ public static class SeedData
                 new Department { Code = "DISP",  Name = "Dispatch",       IsActive = true, CreatedBy = "SYSTEM" }
             );
         }
+        // ── 5. Units of Measure ───────────────────────────────────
+if (!await context.UnitOfMeasures.AnyAsync())
+{
+    context.UnitOfMeasures.AddRange(
+        new UnitOfMeasure { Code = "KG",  Name = "Kilogram",  IsActive = true, CreatedBy = "SYSTEM" },
+        new UnitOfMeasure { Code = "GRM", Name = "Gram",      IsActive = true, CreatedBy = "SYSTEM" },
+        new UnitOfMeasure { Code = "LTR", Name = "Litre",     IsActive = true, CreatedBy = "SYSTEM" },
+        new UnitOfMeasure { Code = "MTR", Name = "Metre",     IsActive = true, CreatedBy = "SYSTEM" },
+        new UnitOfMeasure { Code = "NOS", Name = "Numbers",   IsActive = true, CreatedBy = "SYSTEM" },
+        new UnitOfMeasure { Code = "BOX", Name = "Box",       IsActive = true, CreatedBy = "SYSTEM" },
+        new UnitOfMeasure { Code = "ROL", Name = "Roll",      IsActive = true, CreatedBy = "SYSTEM" }
+    );
+}
+
+// ── 6. Item Categories ────────────────────────────────────
+if (!await context.ItemCategories.AnyAsync())
+{
+    context.ItemCategories.AddRange(
+        new ItemCategory { Code = "INK",  Name = "Inks",             IsActive = true, CreatedBy = "SYSTEM" },
+        new ItemCategory { Code = "SUB",  Name = "Substrates",       IsActive = true, CreatedBy = "SYSTEM" },
+        new ItemCategory { Code = "CHEM", Name = "Chemicals",        IsActive = true, CreatedBy = "SYSTEM" },
+        new ItemCategory { Code = "PKG",  Name = "Packaging",        IsActive = true, CreatedBy = "SYSTEM" },
+        new ItemCategory { Code = "CONS", Name = "Consumables",      IsActive = true, CreatedBy = "SYSTEM" },
+        new ItemCategory { Code = "FG",   Name = "Finished Goods",   IsActive = true, CreatedBy = "SYSTEM" }
+    );
+}
+
+// ── 7. Warehouses ─────────────────────────────────────────
+if (!await context.Warehouses.AnyAsync())
+{
+    context.Warehouses.AddRange(
+        new Warehouse { Code = "RM-STORE", Name = "Raw Material Store",  WarehouseType = "RM",    IsActive = true, CreatedBy = "SYSTEM" },
+        new Warehouse { Code = "FG-STORE", Name = "Finished Goods Store", WarehouseType = "FG",   IsActive = true, CreatedBy = "SYSTEM" },
+        new Warehouse { Code = "WIP",      Name = "Work In Progress",     WarehouseType = "WIP",  IsActive = true, CreatedBy = "SYSTEM" },
+        new Warehouse { Code = "SCRAP",    Name = "Scrap Yard",           WarehouseType = "Scrap", IsActive = true, CreatedBy = "SYSTEM" }
+    );
+}
 
         await context.SaveChangesAsync();
     }

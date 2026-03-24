@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SuryaPolyFlex.Domain.Entities.Core;
+using SuryaPolyFlex.Domain.Entities.Procurement;
+using SuryaPolyFlex.Domain.Entities.Sales;
+using SuryaPolyFlex.Domain.Entities.Inventory;
 
 namespace SuryaPolyFlex.Infrastructure.Data;
 
@@ -17,6 +20,18 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<WorkflowAction> WorkflowActions => Set<WorkflowAction>();
     public DbSet<Attachment> Attachments => Set<Attachment>();
     public DbSet<RoleModulePermission> RoleModulePermissions => Set<RoleModulePermission>();
+    // Procurement masters
+public DbSet<Vendor> Vendors => Set<Vendor>();
+
+// Sales masters
+public DbSet<Customer> Customers => Set<Customer>();
+// Inventory
+public DbSet<UnitOfMeasure> UnitOfMeasures  => Set<UnitOfMeasure>();
+public DbSet<ItemCategory>  ItemCategories  => Set<ItemCategory>();
+public DbSet<Item>          Items           => Set<Item>();
+public DbSet<Warehouse>     Warehouses      => Set<Warehouse>();
+public DbSet<StockBalance>  StockBalances   => Set<StockBalance>();
+public DbSet<StockLedger>   StockLedgers    => Set<StockLedger>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -40,6 +55,17 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
         builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserLogin<string>>().ToTable("UserLogins", "security");
         builder.Entity<Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>>().ToTable("RoleClaims", "security");
         builder.Entity<Microsoft.AspNetCore.Identity.IdentityUserToken<string>>().ToTable("UserTokens", "security");
+// Vendor
+builder.Entity<Vendor>().ToTable("Vendors", "proc");
+builder.Entity<Vendor>().HasIndex(v => v.VendorCode).IsUnique();
+builder.Entity<Vendor>().HasQueryFilter(v => !v.IsDeleted);
+
+// Customer
+builder.Entity<Customer>().ToTable("Customers", "sales");
+builder.Entity<Customer>().HasIndex(c => c.CustomerCode).IsUnique();
+builder.Entity<Customer>().HasQueryFilter(c => !c.IsDeleted);
+builder.Entity<Customer>().Property(c => c.CreditLimit).HasPrecision(18, 2);
+        
 
         // Unique indexes
         builder.Entity<Department>()
@@ -70,5 +96,57 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
             .WithMany()
             .HasForeignKey(r => r.RoleId)
             .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+
+            // Inventory schema
+builder.Entity<UnitOfMeasure>().ToTable("UnitOfMeasures", "inv");
+builder.Entity<UnitOfMeasure>().HasIndex(u => u.Code).IsUnique();
+builder.Entity<UnitOfMeasure>().HasQueryFilter(u => !u.IsDeleted);
+
+builder.Entity<ItemCategory>().ToTable("ItemCategories", "inv");
+builder.Entity<ItemCategory>().HasIndex(c => c.Code).IsUnique();
+builder.Entity<ItemCategory>().HasQueryFilter(c => !c.IsDeleted);
+
+builder.Entity<Item>().ToTable("Items", "inv");
+builder.Entity<Item>().HasIndex(i => i.ItemCode).IsUnique();
+builder.Entity<Item>().HasQueryFilter(i => !i.IsDeleted);
+builder.Entity<Item>().Property(i => i.MinStockLevel).HasPrecision(18, 3);
+builder.Entity<Item>().Property(i => i.ReorderQty).HasPrecision(18, 3);
+builder.Entity<Item>().Property(i => i.StandardCost).HasPrecision(18, 2);
+builder.Entity<Item>()
+    .HasOne(i => i.Category)
+    .WithMany(c => c.Items)
+    .HasForeignKey(i => i.CategoryId)
+    .OnDelete(DeleteBehavior.Restrict);
+builder.Entity<Item>()
+    .HasOne(i => i.UoM)
+    .WithMany()
+    .HasForeignKey(i => i.UoMId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+builder.Entity<Warehouse>().ToTable("Warehouses", "inv");
+builder.Entity<Warehouse>().HasIndex(w => w.Code).IsUnique();
+builder.Entity<Warehouse>().HasQueryFilter(w => !w.IsDeleted);
+
+builder.Entity<StockBalance>().ToTable("StockBalances", "inv");
+builder.Entity<StockBalance>().HasIndex(s => new { s.ItemId, s.WarehouseId }).IsUnique();
+builder.Entity<StockBalance>().Property(s => s.OnHandQty).HasPrecision(18, 3);
+builder.Entity<StockBalance>().Property(s => s.ReservedQty).HasPrecision(18, 3);
+builder.Entity<StockBalance>().Ignore(s => s.AvailableQty);
+builder.Entity<StockBalance>().HasQueryFilter(s =>
+    !s.Item.IsDeleted && !s.Warehouse.IsDeleted);
+
+
+
+builder.Entity<StockLedger>().ToTable("StockLedgers", "inv");
+builder.Entity<StockLedger>().Property(s => s.InwardQty).HasPrecision(18, 3);
+builder.Entity<StockLedger>().Property(s => s.OutwardQty).HasPrecision(18, 3);
+builder.Entity<StockLedger>().Property(s => s.BalanceQty).HasPrecision(18, 3);
+builder.Entity<StockLedger>().Property(s => s.UnitCost).HasPrecision(18, 2);
+builder.Entity<StockLedger>().HasQueryFilter(s =>
+    !s.Item.IsDeleted && !s.Warehouse.IsDeleted);
     }
 }

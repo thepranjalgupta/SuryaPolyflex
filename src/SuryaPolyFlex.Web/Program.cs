@@ -7,6 +7,10 @@ using SuryaPolyFlex.Infrastructure.Services;
 using SuryaPolyFlex.Application.Features.Departments;
 using SuryaPolyFlex.Application.Features.Employees;
 using SuryaPolyFlex.Application.Features.Users;
+using SuryaPolyFlex.Application.Features.Vendors;
+using SuryaPolyFlex.Application.Features.Customers;
+using SuryaPolyFlex.Application.Features.Items;
+using SuryaPolyFlex.Application.Features.Warehouses;
 
 
 
@@ -44,6 +48,12 @@ builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IVendorService, VendorService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IWarehouseService, WarehouseService>();
+builder.Services.AddScoped<INumberSequenceService, NumberSequenceService>();
+
 
 
 

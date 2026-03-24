@@ -1,0 +1,73 @@
+@model SuryaPolyFlex.Application.Features.Customers.EditCustomerDto
+@{ ViewData["Title"] = "Edit Customer"; }
+
+<div class="card shadow-sm mx-auto" style="max-width:700px">
+    <div class="card-header bg-warning"><h5 class="mb-0">Edit Customer</h5></div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="CustomerCode" class="form-label fw-semibold">Code <span class="text-danger">*</span></label>
+                    <input asp-for="CustomerCode" class="form-control" />
+                </div>
+                <div class="col-md-8">
+                    <label asp-for="Name" class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ContactPerson" class="form-label fw-semibold">Contact Person</label>
+                    <input asp-for="ContactPerson" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Mobile" class="form-label fw-semibold">Mobile</label>
+                    <input asp-for="Mobile" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Email" class="form-label fw-semibold">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="BillingAddress" class="form-label fw-semibold">Billing Address</label>
+                    <textarea asp-for="BillingAddress" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="col-12">
+                    <label asp-for="ShippingAddress" class="form-label fw-semibold">Shipping Address</label>
+                    <textarea asp-for="ShippingAddress" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="City" class="form-label fw-semibold">City</label>
+                    <input asp-for="City" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="State" class="form-label fw-semibold">State</label>
+                    <input asp-for="State" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="GSTIN" class="form-label fw-semibold">GSTIN</label>
+                    <input asp-for="GSTIN" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CreditLimit" class="form-label fw-semibold">Credit Limit (₹)</label>
+                    <input asp-for="CreditLimit" class="form-control" type="number" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="PaymentTermDays" class="form-label fw-semibold">Payment Days</label>
+                    <input asp-for="PaymentTermDays" class="form-control" type="number" />
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Active</label>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-warning">Update</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />

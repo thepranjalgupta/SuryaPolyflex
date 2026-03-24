@@ -1,0 +1,61 @@
+@model SuryaPolyFlex.Application.Features.Items.EditItemDto
+@{ ViewData["Title"] = "Edit Item"; }
+
+<div class="card shadow-sm mx-auto" style="max-width:640px">
+    <div class="card-header bg-warning"><h5 class="mb-0">Edit Item</h5></div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="ItemCode" class="form-label fw-semibold">Item Code <span class="text-danger">*</span></label>
+                    <input asp-for="ItemCode" class="form-control" />
+                </div>
+                <div class="col-md-8">
+                    <label asp-for="Name" class="form-label fw-semibold">Item Name <span class="text-danger">*</span></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CategoryId" class="form-label fw-semibold">Category</label>
+                    <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="UoMId" class="form-label fw-semibold">UoM</label>
+                    <select asp-for="UoMId" asp-items="ViewBag.UoMs" class="form-select"></select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ItemType" class="form-label fw-semibold">Item Type</label>
+                    <select asp-for="ItemType" asp-items="ViewBag.ItemTypes" class="form-select"></select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="MinStockLevel" class="form-label fw-semibold">Min Stock Level</label>
+                    <input asp-for="MinStockLevel" class="form-control" type="number" step="0.001" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ReorderQty" class="form-label fw-semibold">Reorder Qty</label>
+                    <input asp-for="ReorderQty" class="form-control" type="number" step="0.001" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="StandardCost" class="form-label fw-semibold">Standard Cost (₹)</label>
+                    <input asp-for="StandardCost" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Active</label>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-warning">Update</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
