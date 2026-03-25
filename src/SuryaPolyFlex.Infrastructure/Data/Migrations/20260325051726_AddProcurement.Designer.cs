@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SuryaPolyFlex.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using SuryaPolyFlex.Infrastructure.Data;
 namespace SuryaPolyFlex.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260325051726_AddProcurement")]
+    partial class AddProcurement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1600,7 +1603,7 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.HasOne("SuryaPolyFlex.Domain.Entities.Procurement.PurchaseOrder", "PurchaseOrder")
                         .WithMany()
                         .HasForeignKey("PurchaseOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Warehouse", "Warehouse")
@@ -1691,7 +1694,7 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.HasOne("SuryaPolyFlex.Domain.Entities.Procurement.Vendor", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Indent");

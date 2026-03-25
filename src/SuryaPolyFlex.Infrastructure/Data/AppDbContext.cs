@@ -33,6 +33,15 @@ public DbSet<Warehouse>     Warehouses      => Set<Warehouse>();
 public DbSet<StockBalance>  StockBalances   => Set<StockBalance>();
 public DbSet<StockLedger>   StockLedgers    => Set<StockLedger>();
 
+
+// Procurement
+public DbSet<Indent>        Indents        => Set<Indent>();
+public DbSet<IndentItem>    IndentItems    => Set<IndentItem>();
+public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
+public DbSet<POItem>        POItems        => Set<POItem>();
+public DbSet<GRN>           GRNs           => Set<GRN>();
+public DbSet<GRNItem>       GRNItems       => Set<GRNItem>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -65,6 +74,8 @@ builder.Entity<Customer>().ToTable("Customers", "sales");
 builder.Entity<Customer>().HasIndex(c => c.CustomerCode).IsUnique();
 builder.Entity<Customer>().HasQueryFilter(c => !c.IsDeleted);
 builder.Entity<Customer>().Property(c => c.CreditLimit).HasPrecision(18, 2);
+
+
         
 
         // Unique indexes
@@ -148,5 +159,51 @@ builder.Entity<StockLedger>().Property(s => s.BalanceQty).HasPrecision(18, 3);
 builder.Entity<StockLedger>().Property(s => s.UnitCost).HasPrecision(18, 2);
 builder.Entity<StockLedger>().HasQueryFilter(s =>
     !s.Item.IsDeleted && !s.Warehouse.IsDeleted);
+
+
+
+
+
+    // Procurement schema
+builder.Entity<Indent>().ToTable("Indents", "proc");
+builder.Entity<Indent>().HasIndex(i => i.IndentNumber).IsUnique();
+builder.Entity<Indent>().HasQueryFilter(i =>
+    i.Department == null || !i.Department.IsDeleted);
+
+
+builder.Entity<IndentItem>().ToTable("IndentItems", "proc");
+builder.Entity<IndentItem>().HasQueryFilter(i =>
+    i.Item == null || !i.Item.IsDeleted);
+builder.Entity<IndentItem>().Property(i => i.RequestedQty).HasPrecision(18, 3);
+builder.Entity<IndentItem>().Property(i => i.ApprovedQty).HasPrecision(18, 3);
+
+builder.Entity<PurchaseOrder>().ToTable("PurchaseOrders", "proc");
+builder.Entity<PurchaseOrder>().HasIndex(p => p.PONumber).IsUnique();
+builder.Entity<PurchaseOrder>().Property(p => p.TotalAmount).HasPrecision(18, 2);
+builder.Entity<PurchaseOrder>().HasQueryFilter(p =>
+    !p.Vendor.IsDeleted);
+
+builder.Entity<POItem>().ToTable("POItems", "proc");
+builder.Entity<POItem>().Ignore(p => p.PendingQty);
+builder.Entity<POItem>().Ignore(p => p.LineTotal);
+builder.Entity<POItem>().Property(p => p.OrderedQty).HasPrecision(18, 3);
+builder.Entity<POItem>().Property(p => p.ReceivedQty).HasPrecision(18, 3);
+builder.Entity<POItem>().Property(p => p.UnitPrice).HasPrecision(18, 2);
+builder.Entity<POItem>().Property(p => p.TaxPct).HasPrecision(5, 2);
+builder.Entity<POItem>().HasQueryFilter(p =>
+    p.Item == null || !p.Item.IsDeleted);
+
+builder.Entity<GRN>().ToTable("GRNs", "proc");
+builder.Entity<GRN>().HasIndex(g => g.GRNNumber).IsUnique();
+builder.Entity<GRN>().HasQueryFilter(g =>
+    !g.PurchaseOrder.Vendor.IsDeleted);
+
+builder.Entity<GRNItem>().ToTable("GRNItems", "proc");
+builder.Entity<GRNItem>().Property(g => g.ReceivedQty).HasPrecision(18, 3);
+builder.Entity<GRNItem>().Property(g => g.AcceptedQty).HasPrecision(18, 3);
+builder.Entity<GRNItem>().Property(g => g.RejectedQty).HasPrecision(18, 3);
+builder.Entity<GRNItem>().Property(g => g.UnitCost).HasPrecision(18, 2);
+builder.Entity<GRNItem>().HasQueryFilter(g =>
+    g.Item == null || !g.Item.IsDeleted);
     }
 }
