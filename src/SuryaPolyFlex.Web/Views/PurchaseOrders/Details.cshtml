@@ -1,0 +1,131 @@
+@model SuryaPolyFlex.Application.Features.PurchaseOrders.PurchaseOrderDto
+@{ ViewData["Title"] = "PO Details"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Purchase Order — @Model.PONumber</h4>
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">← Back</a>
+</div>
+
+@if (TempData["Success"] != null)
+{ <div class="alert alert-success">@TempData["Success"]</div> }
+@if (TempData["Error"] != null)
+{ <div class="alert alert-danger">@TempData["Error"]</div> }
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <small class="text-muted">PO Date</small>
+                <div class="fw-semibold">@Model.PODate.ToLocalTime().ToString("dd MMM yyyy")</div>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Vendor</small>
+                <div class="fw-semibold">@Model.VendorName</div>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Status</small>
+                <div>
+                    @{
+                        var c = Model.Status switch {
+                            "Open"            => "bg-primary",
+                            "PartialReceived" => "bg-warning text-dark",
+                            "Closed"          => "bg-success",
+                            "Cancelled"       => "bg-danger",
+                            _                 => "bg-secondary"
+                        };
+                    }
+                    <span class="badge @c">@Model.Status</span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Total Amount</small>
+                <div class="fw-semibold text-success">₹@Model.TotalAmount.ToString("N2")</div>
+            </div>
+            @if (Model.IndentNumber != null)
+            {
+                <div class="col-md-3">
+                    <small class="text-muted">Indent Ref</small>
+                    <div>@Model.IndentNumber</div>
+                </div>
+            }
+            @if (Model.ExpectedDeliveryDate.HasValue)
+            {
+                <div class="col-md-3">
+                    <small class="text-muted">Expected Delivery</small>
+                    <div>@Model.ExpectedDeliveryDate.Value.ToString("dd MMM yyyy")</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-header fw-semibold">Items</div>
+    <div class="card-body p-0">
+        <table class="table table-sm table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th><th>Item</th><th>UoM</th>
+                    <th>Ordered</th><th>Received</th><th>Pending</th>
+                    <th>Unit Price</th><th>Line Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ int sr = 1; }
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@sr++</td>
+                        <td>
+                            <span class="badge bg-secondary">@item.ItemCode</span>
+                            @item.ItemName
+                        </td>
+                        <td>@item.UoMCode</td>
+                        <td>@item.OrderedQty</td>
+                        <td class="text-success fw-semibold">@item.ReceivedQty</td>
+                        <td class="text-warning fw-semibold">@item.PendingQty</td>
+                        <td>₹@item.UnitPrice</td>
+                        <td>₹@item.LineTotal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-light fw-semibold">
+                    <td colspan="7" class="text-end">Total</td>
+                    <td>₹@Model.TotalAmount.ToString("N2")</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    @if (Model.Status == "Open")
+    {
+        <form asp-action="Approve" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-success"
+                    onclick="return confirm('Approve this PO?')">✓ Approve PO</button>
+        </form>
+
+        <a asp-controller="GRN" asp-action="Create"
+           asp-route-poId="@Model.Id"
+           class="btn btn-warning">+ Create GRN</a>
+
+        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-outline-danger"
+                    onclick="return confirm('Cancel this PO?')">Cancel PO</button>
+        </form>
+    }
+    @if (Model.Status == "PartialReceived")
+    {
+        <a asp-controller="GRN" asp-action="Create"
+           asp-route-poId="@Model.Id"
+           class="btn btn-warning">+ Create GRN</a>
+    }
+    <a asp-action="Index" class="btn btn-outline-secondary">← Back to List</a>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

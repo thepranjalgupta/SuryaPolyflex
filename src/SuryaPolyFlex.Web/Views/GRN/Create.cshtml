@@ -1,0 +1,150 @@
+@model SuryaPolyFlex.Application.Features.GRN.CreateGRNViewModel
+@{ ViewData["Title"] = "New GRN"; }
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">New Goods Receipt Note</h5>
+    </div>
+    <div class="card-body">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div>@e.ErrorMessage</div>
+                }
+            </div>
+        }
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        Purchase Order <span class="text-danger">*</span>
+                    </label>
+                    <select name="PurchaseOrderId"
+                            class="form-select" required>
+                        <option value="">-- Select PO --</option>
+                        @foreach (SelectListItem po in ViewBag.PurchaseOrders)
+                        {
+                            <option value="@po.Value"
+                                    selected="@(po.Value == Model.Form.PurchaseOrderId.ToString())">
+                                @po.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        Receive Into Warehouse <span class="text-danger">*</span>
+                    </label>
+                    <select name="WarehouseId" class="form-select" required>
+                        <option value="">-- Select Warehouse --</option>
+                        @foreach (SelectListItem w in ViewBag.Warehouses)
+                        {
+                            <option value="@w.Value">@w.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Vehicle Number</label>
+                    <input name="VehicleNumber" class="form-control"
+                           value="@Model.Form.VehicleNumber" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Delivery Note No</label>
+                    <input name="DeliveryNoteNumber" class="form-control"
+                           value="@Model.Form.DeliveryNoteNumber" />
+                </div>
+                <div class="col-md-8">
+                    <label class="form-label fw-semibold">Remarks</label>
+                    <input name="Remarks" class="form-control"
+                           value="@Model.Form.Remarks" />
+                </div>
+            </div>
+
+            <h6 class="fw-semibold mb-2">Items</h6>
+
+            @if (Model.Lines.Any())
+            {
+                <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item</th>
+                            <th>UoM</th>
+                            <th style="width:130px">Received Qty</th>
+                            <th style="width:130px">Accepted Qty</th>
+                            <th style="width:130px">Unit Cost (₹)</th>
+                            <th style="width:180px">Rejection Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Lines.Count; i++)
+                        {
+                            var line = Model.Lines[i];
+                            <input type="hidden" name="Items[@i].POItemId" value="@line.POItemId" />
+                            <input type="hidden" name="Items[@i].ItemId"   value="@line.ItemId" />
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">@line.ItemCode</span>
+                                    @line.ItemName
+                                </td>
+                                <td>@line.UoMCode</td>
+                                <td>
+                                    <input type="number"
+                                           name="Items[@i].ReceivedQty"
+                                           class="form-control form-control-sm"
+                                           value="@line.PendingQty"
+                                           step="0.001" min="0" required />
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           name="Items[@i].AcceptedQty"
+                                           class="form-control form-control-sm"
+                                           value="@line.PendingQty"
+                                           step="0.001" min="0" required />
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           name="Items[@i].UnitCost"
+                                           class="form-control form-control-sm"
+                                           value="@line.UnitCost"
+                                           step="0.01" min="0" />
+                                </td>
+                                <td>
+                                    <input type="text"
+                                           name="Items[@i].RejectionReason"
+                                           class="form-control form-control-sm" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    Select a PO from the dropdown above, then navigate to
+                    <strong>PO Details → Create GRN</strong> to pre-load items.
+                    Or go back to
+                    <a asp-controller="PurchaseOrders" asp-action="Index">Purchase Orders</a>
+                    and click the <strong>GRN</strong> button on an open PO.
+                </div>
+            }
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary"
+                        @(Model.Lines.Any() ? "" : "disabled")>
+                    Save GRN
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

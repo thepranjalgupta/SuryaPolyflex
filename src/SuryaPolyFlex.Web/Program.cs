@@ -12,6 +12,9 @@ using SuryaPolyFlex.Application.Features.Customers;
 using SuryaPolyFlex.Application.Features.Items;
 using SuryaPolyFlex.Application.Features.Warehouses;
 using SuryaPolyFlex.Application.Features.Indents;
+using SuryaPolyFlex.Application.Features.PurchaseOrders;
+using SuryaPolyFlex.Application.Features.GRN;
+
 
 
 
@@ -56,6 +59,9 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<INumberSequenceService, NumberSequenceService>();
 builder.Services.AddScoped<IIndentService, IndentService>();
+builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+builder.Services.AddScoped<IGRNService, GRNService>();
+builder.Services.AddScoped<IStockService, StockService>();
 
 
 
