@@ -25,7 +25,7 @@
                     <label class="form-label fw-semibold">
                         Purchase Order <span class="text-danger">*</span>
                     </label>
-                    <select name="PurchaseOrderId"
+                    <select id="PurchaseOrderId" name="PurchaseOrderId"
                             class="form-select" required>
                         <option value="">-- Select PO --</option>
                         @foreach (SelectListItem po in ViewBag.PurchaseOrders)
@@ -66,11 +66,17 @@
                 </div>
             </div>
 
-            <h6 class="fw-semibold mb-2">Items</h6>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-semibold mb-0">Items</h6>
+                @if (Model.Lines.Any())
+                {
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="addGrnItemBtn" onclick="addGrnItemRow()">+ Add Item</button>
+                }
+            </div>
 
             @if (Model.Lines.Any())
             {
-                <table class="table table-sm table-bordered">
+                <table class="table table-sm table-bordered" id="grnItemsTable">
                     <thead class="table-light">
                         <tr>
                             <th>Item</th>
@@ -79,6 +85,7 @@
                             <th style="width:130px">Accepted Qty</th>
                             <th style="width:130px">Unit Cost (₹)</th>
                             <th style="width:180px">Rejection Reason</th>
+                            <th style="width:50px"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,6 +126,9 @@
                                            name="Items[@i].RejectionReason"
                                            class="form-control form-control-sm" />
                                 </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeGrnRow(this)">−</button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -148,3 +158,91 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var poSelect = document.getElementById('PurchaseOrderId');
+        if (!poSelect) return;
+
+        poSelect.addEventListener('change', function() {
+            var val = this.value;
+            if (!val) return;
+            // reload the page with selected PO to auto-populate item lines
+            window.location.href = '@Url.Action("Create", "GRN")?poId=' + encodeURIComponent(val);
+        });
+    });
+
+    function addGrnItemRow() {
+        var table = document.getElementById('grnItemsTable');
+        if (!table) {
+            alert('No items table found. Please select a PO first.');
+            return;
+        }
+
+        var tbody = table.querySelector('tbody');
+        var rowCount = tbody.querySelectorAll('tr').length;
+        var newIndex = rowCount;
+
+        var tr = document.createElement('tr');
+        tr.innerHTML = `
+            <input type="hidden" name="Items[${newIndex}].POItemId" value="0" />
+            <input type="hidden" name="Items[${newIndex}].ItemId" value="0" />
+            <td>
+                <input type="text" class="form-control form-control-sm" placeholder="Item description" disabled />
+            </td>
+            <td>
+                <input type="text" class="form-control form-control-sm" placeholder="UoM" disabled />
+            </td>
+            <td>
+                <input type="number"
+                       name="Items[${newIndex}].ReceivedQty"
+                       class="form-control form-control-sm"
+                       step="0.001" min="0" value="0" required />
+            </td>
+            <td>
+                <input type="number"
+                       name="Items[${newIndex}].AcceptedQty"
+                       class="form-control form-control-sm"
+                       step="0.001" min="0" value="0" required />
+            </td>
+            <td>
+                <input type="number"
+                       name="Items[${newIndex}].UnitCost"
+                       class="form-control form-control-sm"
+                       step="0.01" min="0" value="0" />
+            </td>
+            <td>
+                <input type="text"
+                       name="Items[${newIndex}].RejectionReason"
+                       class="form-control form-control-sm" />
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeGrnRow(this)">−</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function removeGrnRow(btn) {
+        var tbody = btn.closest('table').querySelector('tbody');
+        var rows = tbody.querySelectorAll('tr');
+        if (rows.length <= 1) {
+            alert('Cannot remove the last item row.');
+            return;
+        }
+        btn.closest('tr').remove();
+        updateGrnRowIndexes();
+    }
+
+    function updateGrnRowIndexes() {
+        var table = document.getElementById('grnItemsTable');
+        if (!table) return;
+        
+        var tbody = table.querySelector('tbody');
+        var rows = tbody.querySelectorAll('tr');
+        rows.forEach((row, idx) => {
+            row.querySelectorAll('[name]').forEach(el => {
+                el.name = el.name.replace(/Items\[\d+\]/, `Items[${idx}]`);
+            });
+        });
+    }
+</script>

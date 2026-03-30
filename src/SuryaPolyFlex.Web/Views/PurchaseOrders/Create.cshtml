@@ -12,10 +12,6 @@
     <div class="card-body">
         <form asp-action="Create" method="post" id="poForm">
             @Html.AntiForgeryToken()
-            @if (Model.IndentId.HasValue)
-            {
-                <input type="hidden" name="IndentId" value="@Model.IndentId" />
-            }
 
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
@@ -24,6 +20,12 @@
                         <option value="">-- Select Vendor --</option>
                     </select>
                     <span asp-validation-for="VendorId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="IndentId" class="form-label fw-semibold">Indent (Optional)</label>
+                    <select id="indentSelect" asp-for="IndentId" asp-items="ViewBag.Indents" class="form-select">
+                        <option value="">-- Select Indent --</option>
+                    </select>
                 </div>
                 <div class="col-md-4">
                     <label asp-for="ExpectedDeliveryDate" class="form-label fw-semibold">Expected Delivery</label>
@@ -51,10 +53,35 @@
                         <th style="width:50px"></th>
                     </tr>
                 </thead>
-                <tbody id="poItemsBody"></tbody>
+                <tbody id="poItemsBody">
+                    @if (Model.Items != null)
+                    {
+                        int index = 0;
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <select name="Items[@index].ItemId" class="form-select item-select">
+                                        <option value="">-- Select Item --</option>
+                                        @foreach (var it in itemsList)
+                                        {
+                                            <option value="@it.Id" selected="@(it.Id == item.ItemId)">@it.ItemCode - @it.Name (@it.UoMCode)</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td><input name="Items[@index].OrderedQty" type="number" step="0.01" class="form-control qty-input" value="@item.OrderedQty.ToString("0.00")" /></td>
+                                <td><input name="Items[@index].UnitPrice" type="number" step="0.01" class="form-control price-input" value="@item.UnitPrice.ToString("0.00")" /></td>
+                                <td><input name="Items[@index].TaxPct" type="number" step="0.01" class="form-control tax-input" value="@item.TaxPct.ToString("0.00")" /></td>
+                                <td class="line-total">₹@((item.OrderedQty * item.UnitPrice).ToString("0.00"))</td>
+                                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">×</button></td>
+                            </tr>
+                            index++;
+                        }
+                    }
+                </tbody>
             </table>
 
-            <div id="noItemsMsg" class="text-muted small mb-2">No items added yet.</div>
+            <div id="noItemsMsg" class="text-muted small mb-2" style="display: @(Model.Items != null && Model.Items.Any() ? "none" : "block")">No items added yet.</div>
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <button type="button" class="btn btn-sm btn-outline-primary"
                         onclick="addPOItemRow()">+ Add Item</button>
@@ -84,7 +111,7 @@
         }
     ];
 
-    let rowIndex = 0;
+    let rowIndex = @(Model.Items?.Count ?? 0);
 
     function buildOptions() {
         let html = '<option value="">-- Select Item --</option>';
@@ -168,6 +195,21 @@
         if (document.getElementById('poItemsBody').children.length === 0) {
             e.preventDefault();
             alert('Please add at least one item.');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateTotal();
+        
+        // Indent auto-load handler
+        const indentSelect = document.getElementById('indentSelect');
+        if (indentSelect) {
+            indentSelect.addEventListener('change', function() {
+                const val = this.value;
+                if (!val) return;
+                // Reload page with selected indent ID to auto-populate items in GET
+                window.location.href = '@Url.Action("Create", "PurchaseOrders")?indentId=' + encodeURIComponent(val);
+            });
         }
     });
 </script>

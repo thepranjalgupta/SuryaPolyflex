@@ -27,8 +27,7 @@
                 <div>
                     @{
                         var c = Model.Status switch {
-                            "Open"            => "bg-primary",
-                            "PartialReceived" => "bg-warning text-dark",
+                            "Open"            => "bg-primary",                            "Approved"        => "bg-info text-dark",                            "PartialReceived" => "bg-warning text-dark",
                             "Closed"          => "bg-success",
                             "Cancelled"       => "bg-danger",
                             _                 => "bg-secondary"
@@ -118,7 +117,7 @@
                     onclick="return confirm('Cancel this PO?')">Cancel PO</button>
         </form>
     }
-    @if (Model.Status == "PartialReceived")
+    @if (Model.Status == "Approved" || Model.Status == "PartialReceived")
     {
         <a asp-controller="GRN" asp-action="Create"
            asp-route-poId="@Model.Id"

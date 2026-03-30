@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SuryaPolyFlex.Application.Common.Interfaces;
 using SuryaPolyFlex.Application.Features.PurchaseOrders;
+using SuryaPolyFlex.Application.Features.Indents;
 using SuryaPolyFlex.Domain.Entities.Core;
 using SuryaPolyFlex.Domain.Entities.Procurement;
 using SuryaPolyFlex.Domain.Enums;
@@ -12,13 +13,16 @@ public class PurchaseOrderService : IPurchaseOrderService
 {
     private readonly AppDbContext _context;
     private readonly INumberSequenceService _numberService;
+    private readonly IIndentService _indentService;
 
     public PurchaseOrderService(
         AppDbContext context,
-        INumberSequenceService numberService)
+        INumberSequenceService numberService,
+        IIndentService indentService)
     {
         _context       = context;
         _numberService = numberService;
+        _indentService = indentService;
     }
 
     public async Task<List<PurchaseOrderDto>> GetAllAsync(string? status = null)
@@ -155,6 +159,7 @@ public class PurchaseOrderService : IPurchaseOrderService
         if (po.Status != PurchaseOrderStatus.Open)
             return (false, "Only Open POs can be approved.");
 
+        po.Status       = PurchaseOrderStatus.Approved;
         po.ApprovedById = userId;
         po.ApprovedAt   = DateTime.UtcNow;
         po.UpdatedAt    = DateTime.UtcNow;
@@ -195,8 +200,10 @@ public class PurchaseOrderService : IPurchaseOrderService
         var pos = await _context.PurchaseOrders
             .Include(p => p.Vendor)
             .Include(p => p.Items)
-            .Where(p => p.Status == PurchaseOrderStatus.Open ||
-                        p.Status == PurchaseOrderStatus.PartialReceived)
+            .Where(p => (p.Status == PurchaseOrderStatus.Open ||
+                         p.Status == PurchaseOrderStatus.PartialReceived ||
+                         p.Status == PurchaseOrderStatus.Approved) &&
+                        !string.IsNullOrEmpty(p.ApprovedById))
             .OrderByDescending(p => p.PODate)
             .ToListAsync();
 

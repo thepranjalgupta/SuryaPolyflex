@@ -6,6 +6,7 @@ using SuryaPolyFlex.Application.Common;
 using SuryaPolyFlex.Application.Features.Items;
 using SuryaPolyFlex.Application.Features.PurchaseOrders;
 using SuryaPolyFlex.Application.Features.Vendors;
+using SuryaPolyFlex.Application.Features.Indents;
 using SuryaPolyFlex.Web.Filters;
 
 namespace SuryaPolyFlex.Web.Controllers;
@@ -16,15 +17,18 @@ public class PurchaseOrdersController : Controller
     private readonly IPurchaseOrderService _poService;
     private readonly IVendorService        _vendorService;
     private readonly IItemService          _itemService;
+    private readonly IIndentService        _indentService;
 
     public PurchaseOrdersController(
         IPurchaseOrderService poService,
         IVendorService vendorService,
-        IItemService itemService)
+        IItemService itemService,
+        IIndentService indentService)
     {
         _poService     = poService;
         _vendorService = vendorService;
         _itemService   = itemService;
+        _indentService = indentService;
     }
 
     [RequirePermission(Permissions.PurchaseOrders.View)]
@@ -39,6 +43,21 @@ public class PurchaseOrdersController : Controller
     {
         await LoadDropdownsAsync();
         var dto = new CreatePODto { IndentId = indentId };
+        if (indentId.HasValue)
+        {
+            var indent = await _indentService.GetByIdAsync(indentId.Value);
+            if (indent != null)
+            {
+                dto.Items = indent.Items.Select(i => new CreatePOItemDto
+                {
+                    ItemId = i.ItemId,
+                    OrderedQty = i.ApprovedQty,
+                    UnitPrice = 0,
+                    TaxPct = 0,
+                    Remarks = i.Remarks
+                }).ToList();
+            }
+        }
         return View(dto);
     }
 
@@ -109,7 +128,9 @@ public class PurchaseOrdersController : Controller
     {
         var vendors = await _vendorService.GetAllAsync();
         var items   = await _itemService.GetSelectListAsync();
+        var indents = await _indentService.GetAllAsync("Approved");
         ViewBag.Vendors = new SelectList(vendors, "Id", "Name");
         ViewBag.Items   = items;
+        ViewBag.Indents = new SelectList(indents, "Id", "IndentNumber");
     }
 }

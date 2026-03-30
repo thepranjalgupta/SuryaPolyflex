@@ -1,0 +1,75 @@
+@{ ViewData["Title"] = "Stock Balance"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Stock Balance</h4>
+    <a asp-action="Ledger" class="btn btn-outline-primary btn-sm">View Ledger</a>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" class="d-flex gap-2">
+            <select name="warehouseId" class="form-select form-select-sm w-auto">
+                <option value="">All Warehouses</option>
+                @foreach (SelectListItem w in ViewBag.Warehouses)
+                {
+                    <option value="@w.Value"
+                            selected="@(w.Value == ViewBag.WarehouseId?.ToString())">
+                        @w.Text
+                    </option>
+                }
+            </select>
+            <input type="text" name="search" value="@ViewBag.Search"
+                   class="form-control form-control-sm w-25"
+                   placeholder="Search item code or name..." />
+            <button class="btn btn-sm btn-outline-secondary">Search</button>
+            <a asp-action="Balance" class="btn btn-sm btn-outline-danger">Clear</a>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-hover table-sm align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Item Code</th><th>Item Name</th><th>Category</th>
+                    <th>Warehouse</th><th>UoM</th>
+                    <th>On Hand</th><th>Reserved</th><th>Available</th>
+                    <th>Min Level</th><th>Alert</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="10" class="text-center text-muted py-3">No stock records found.</td></tr>
+                }
+                @foreach (var s in Model)
+                {
+                    <tr class="@(s.IsLow ? "table-danger" : "")">
+                        <td><span class="badge bg-secondary">@s.ItemCode</span></td>
+                        <td class="fw-semibold">@s.Name</td>
+                        <td class="small text-muted">@s.Category</td>
+                        <td class="small">@s.Warehouse</td>
+                        <td class="small">@s.UoM</td>
+                        <td class="fw-semibold @(s.IsLow ? "text-danger" : "text-success")">
+                            @s.OnHandQty
+                        </td>
+                        <td class="text-warning">@s.ReservedQty</td>
+                        <td class="fw-semibold">@s.AvailableQty</td>
+                        <td class="small text-muted">@s.MinStockLevel</td>
+                        <td>
+                            @if (s.IsLow)
+                            {
+                                <span class="badge bg-danger">Low Stock</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">OK</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

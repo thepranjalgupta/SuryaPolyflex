@@ -1,0 +1,294 @@
+@model SuryaPolyFlex.Application.Features.Dispatch.CreateChallanDto
+@{ ViewData["Title"] = "New Delivery Challan"; }
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">New Delivery Challan</h5>
+    </div>
+    <div class="card-body">
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div>@e.ErrorMessage</div>
+                }
+            </div>
+        }
+
+        <form asp-action="CreateChallan" method="post" id="challanForm">
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Sales Order <span class="text-danger">*</span></label>
+                    <select id="soSelect" name="SOId" class="form-select" required>
+                        <option value="">-- Select Sales Order --</option>
+                        @foreach (SelectListItem so in ViewBag.SalesOrders)
+                        {
+                            <option value="@so.Value"
+                                    selected="@(so.Value == Model.SOId.ToString())">
+                                @so.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Transporter</label>
+                    <select name="TransporterId" class="form-select">
+                        <option value="">-- Select Transporter --</option>
+                        @foreach (SelectListItem t in ViewBag.Transporters)
+                        {
+                            <option value="@t.Value">@t.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Vehicle Number</label>
+                    <input name="VehicleNumber" class="form-control"
+                           value="@Model.VehicleNumber" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Driver Name</label>
+                    <input name="DriverName" class="form-control"
+                           value="@Model.DriverName" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">LR Number</label>
+                    <input name="LRNumber" class="form-control"
+                           value="@Model.LRNumber" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">E-Way Bill No</label>
+                    <input name="EWayBillNo" class="form-control"
+                           value="@Model.EWayBillNo" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Delivery Address</label>
+                    <textarea name="DeliveryAddress" class="form-control"
+                              rows="2">@Model.DeliveryAddress</textarea>
+                </div>
+            </div>
+
+            <h6 class="fw-semibold mb-2">Items</h6>
+
+            <div id="itemsStatus" class="alert alert-info mb-2">
+                @if (Model.SOId > 0 && Model.Items != null && Model.Items.Any())
+                {
+                    @:Items loaded — @Model.Items.Count item(s) ready to dispatch.
+                }
+                else
+                {
+                    @:Select a Sales Order from the dropdown above to load items.
+                }
+            </div>
+
+            <table class="table table-sm table-bordered" id="itemsTable"
+                   style="@(Model.Items != null && Model.Items.Any() ? "" : "display:none")">
+                <thead class="table-light">
+                    <tr>
+                        <th>Description</th>
+                        <th>UoM</th>
+                        <th style="width:140px">Dispatch Qty</th>
+                        <th style="width:130px">Unit Rate (₹)</th>
+                        <th style="width:120px">Line Total</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                    @if (Model.Items != null)
+                    {
+                        for (int i = 0; i < Model.Items.Count; i++)
+                        {
+                            var item = Model.Items[i];
+                            <tr>
+                                <input type="hidden" name="Items[@i].SOItemId"
+                                       value="@item.SOItemId" />
+                                <input type="hidden" name="Items[@i].ItemId"
+                                       value="@item.ItemId" />
+                                <input type="hidden" name="Items[@i].ItemName"
+                                       value="@item.ItemName" />
+                                <input type="hidden" name="Items[@i].UoMCode"
+                                       value="@item.UoMCode" />
+                                <input type="hidden" name="Items[@i].UoMId"
+                                       value="@item.UoMId" />
+                                <td>@item.ItemName</td>
+                                <td>@item.UoMCode</td>
+                                <td>
+                                    <input type="number"
+                                           name="Items[@i].DispatchedQty"
+                                           class="form-control form-control-sm dqty"
+                                           value="@item.DispatchedQty"
+                                           step="0.001" min="0.001" required
+                                           oninput="calcTotal()" />
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           name="Items[@i].UnitRate"
+                                           class="form-control form-control-sm urate"
+                                           value="@item.UnitRate"
+                                           step="0.01" min="0"
+                                           oninput="calcTotal()" />
+                                </td>
+                                <td class="lt fw-semibold text-end">
+                                    ₹@((item.DispatchedQty * item.UnitRate).ToString("N2"))
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-light">
+                        <td colspan="4" class="text-end fw-semibold">Total</td>
+                        <td id="grandTotal" class="fw-semibold text-end">
+                            ₹@((Model.Items?.Sum(i => i.DispatchedQty * i.UnitRate) ?? 0).ToString("N2"))
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" id="submitBtn"
+                        class="btn btn-primary"
+                        @(Model.Items != null && Model.Items.Any() ? "" : "disabled")>
+                    Create Challan
+                </button>
+                <a asp-action="Challans" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let rowIndex = @(Model.Items?.Count ?? 0);
+
+    // ── Load items when SO changes ────────────────────────────────────────
+    document.getElementById('soSelect').addEventListener('change', function () {
+        const soId = this.value;
+        if (!soId) {
+            clearItems('Select a Sales Order to load items.');
+            return;
+        }
+        loadItems(soId);
+    });
+
+    function loadItems(soId) {
+        setStatus('Loading items...', 'info');
+        fetch(`@Url.Action("GetSOItemsForChallan", "Dispatch")?soId=${soId}`)
+            .then(r => {
+                if (!r.ok) throw new Error('Server returned ' + r.status);
+                return r.json();
+            })
+            .then(items => {
+                if (!Array.isArray(items) || items.length === 0) {
+                    clearItems('No pending items for this Sales Order. All quantities have been dispatched.');
+                    return;
+                }
+                renderItems(items);
+            })
+            .catch(err => {
+                clearItems('Error loading items: ' + err.message);
+            });
+    }
+
+    function renderItems(items) {
+        const tbody = document.getElementById('itemsBody');
+        tbody.innerHTML = '';
+        rowIndex = 0;
+
+        items.forEach(item => {
+            // Handle both camelCase (from ASP.NET JSON) and PascalCase
+            const soItemId     = item.soItemId     ?? item.SOItemId     ?? 0;
+            const itemId       = item.itemId       ?? item.ItemId       ?? 0;
+            const itemName     = item.itemName     ?? item.ItemName     ?? '';
+            const uoMCode      = item.uoMCode      ?? item.UoMCode      ?? '';
+            const uoMId        = item.uoMId        ?? item.UoMId        ?? '';
+            const dispatchedQty = item.dispatchedQty ?? item.DispatchedQty ?? 0;
+            const unitRate     = item.unitRate     ?? item.UnitRate     ?? 0;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <input type="hidden" name="Items[${rowIndex}].SOItemId"    value="${soItemId}" />
+                <input type="hidden" name="Items[${rowIndex}].ItemId"      value="${itemId}" />
+                <input type="hidden" name="Items[${rowIndex}].ItemName"    value="${itemName}" />
+                <input type="hidden" name="Items[${rowIndex}].UoMCode"     value="${uoMCode}" />
+                <input type="hidden" name="Items[${rowIndex}].UoMId"       value="${uoMId}" />
+                <td>${itemName || '—'}</td>
+                <td>${uoMCode || '—'}</td>
+                <td>
+                    <input type="number"
+                           name="Items[${rowIndex}].DispatchedQty"
+                           class="form-control form-control-sm dqty"
+                           value="${dispatchedQty}"
+                           step="0.001" min="0.001" required
+                           oninput="calcTotal()" />
+                </td>
+                <td>
+                    <input type="number"
+                           name="Items[${rowIndex}].UnitRate"
+                           class="form-control form-control-sm urate"
+                           value="${unitRate}"
+                           step="0.01" min="0"
+                           oninput="calcTotal()" />
+                </td>
+                <td class="lt fw-semibold text-end">₹${(dispatchedQty * unitRate).toFixed(2)}</td>`;
+            tbody.appendChild(tr);
+            rowIndex++;
+        });
+
+        document.getElementById('itemsTable').style.display = 'table';
+        document.getElementById('submitBtn').disabled = false;
+        setStatus(`${items.length} item(s) loaded and ready.`, 'success');
+        calcTotal();
+    }
+
+    function clearItems(msg) {
+        document.getElementById('itemsBody').innerHTML = '';
+        document.getElementById('itemsTable').style.display = 'none';
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('grandTotal').textContent = '₹0.00';
+        rowIndex = 0;
+        setStatus(msg, 'info');
+    }
+
+    function setStatus(msg, type) {
+        const el = document.getElementById('itemsStatus');
+        el.className = `alert alert-${type} mb-2`;
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+
+    function calcTotal() {
+        let total = 0;
+        document.querySelectorAll('#itemsBody tr').forEach(row => {
+            const qty  = parseFloat(row.querySelector('.dqty')?.value)  || 0;
+            const rate = parseFloat(row.querySelector('.urate')?.value) || 0;
+            const line = qty * rate;
+            const cell = row.querySelector('.lt');
+            if (cell) cell.textContent = '₹' + line.toFixed(2);
+            total += line;
+        });
+        document.getElementById('grandTotal').textContent = '₹' + total.toFixed(2);
+    }
+
+    // ── On page load ──────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function () {
+        const preloadedRows = document.querySelectorAll('#itemsBody tr').length;
+        const soVal = document.getElementById('soSelect').value;
+
+        if (preloadedRows > 0) {
+            // Items were pre-loaded server-side (came from SO Details page)
+            document.getElementById('itemsTable').style.display = 'table';
+            document.getElementById('submitBtn').disabled = false;
+            setStatus(`${preloadedRows} item(s) loaded.`, 'success');
+            rowIndex = preloadedRows;
+            calcTotal();
+        } else if (soVal) {
+            // SO pre-selected but no items — load via AJAX
+            loadItems(soVal);
+        }
+    });
+</script>

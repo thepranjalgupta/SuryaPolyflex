@@ -130,7 +130,35 @@ public class GRNService : IGRNService
             po.Status == PurchaseOrderStatus.Cancelled)
             return (false, "Cannot create GRN for closed or cancelled PO.", 0);
 
+        if (string.IsNullOrEmpty(po.ApprovedById) ||
+            (po.Status != PurchaseOrderStatus.Approved && po.Status != PurchaseOrderStatus.PartialReceived))
+            return (false, "Only approved or partially received Purchase Orders can generate GRN.", 0);
+
+        if (dto.Items == null || !dto.Items.Any())
+            return (false, "Please add at least one item to GRN.", 0);
+
         var grnNumber = await _numberService.GenerateAsync("GRN");
+
+        // Validate provided quantities against PO pending quantities
+        foreach (var itemDto in dto.Items)
+        {
+            if (itemDto.ReceivedQty <= 0)
+                return (false, "Received quantity must be greater than zero for each selected item.", 0);
+
+            if (itemDto.AcceptedQty < 0 || itemDto.AcceptedQty > itemDto.ReceivedQty)
+                return (false, "Accepted quantity must be between 0 and received quantity for each item.", 0);
+
+            var poItem = po.Items.FirstOrDefault(i => i.Id == itemDto.POItemId);
+            if (poItem == null)
+                return (false, "One or more items are not linked to the selected Purchase Order.", 0);
+
+            var pendingQty = poItem.OrderedQty - poItem.ReceivedQty;
+            if (pendingQty <= 0)
+                return (false, $"PO item '{poItem.Id}' has no pending quantity.", 0);
+
+            if (itemDto.ReceivedQty > pendingQty)
+                return (false, $"Received quantity for item '{poItem.Id}' exceeds pending quantity ({pendingQty}).", 0);
+        }
 
         var grn = new GRN
         {

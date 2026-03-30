@@ -1,0 +1,64 @@
+@model List<SuryaPolyFlex.Application.Features.Quotations.QuotationDto>
+@{ ViewData["Title"] = "Quotations"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Quotations</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ New Quotation</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Quotation No</th><th>Date</th><th>Customer</th>
+                    <th>Valid Until</th><th>Amount</th><th>Rev</th>
+                    <th>Status</th><th style="width:100px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center text-muted">No quotations found.</td></tr>
+                }
+                @foreach (var q in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold text-primary">@q.QuotationNumber</td>
+                        <td class="small">@q.QuotationDate.ToLocalTime().ToString("dd MMM yyyy")</td>
+                        <td>@q.CustomerName</td>
+                        <td class="small">@q.ValidUntil?.ToString("dd MMM yyyy")</td>
+                        <td>₹@q.TotalAmount.ToString("N2")</td>
+                        <td class="text-center">@q.Revision</td>
+                        <td>
+                            @{
+                                var c = q.Status switch {
+                                    "Draft"    => "bg-secondary",
+                                    "Sent"     => "bg-primary",
+                                    "Accepted" => "bg-success",
+                                    "Rejected" => "bg-danger",
+                                    "Revised"  => "bg-warning text-dark",
+                                    _          => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @c">@q.Status</span>
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@q.Id"
+                               class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,53 @@
+@model SuryaPolyFlex.Application.Features.Production.CreateJobCardDto
+@{ ViewData["Title"] = "New Job Card"; }
+
+<div class="card shadow-sm mx-auto" style="max-width:640px">
+    <div class="card-header bg-primary text-white"><h5 class="mb-0">New Job Card</h5></div>
+    <div class="card-body">
+        <form asp-action="CreateJobCard" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="SOId" class="form-label fw-semibold">Sales Order</label>
+                    <select asp-for="SOId" asp-items="ViewBag.SalesOrders" class="form-select">
+                        <option value="">-- Select SO (optional) --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="MachineId" class="form-label fw-semibold">Machine</label>
+                    <select asp-for="MachineId" asp-items="ViewBag.Machines" class="form-select">
+                        <option value="">-- Select Machine --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Shift" class="form-label fw-semibold">Shift</label>
+                    <select asp-for="Shift" asp-items="ViewBag.Shifts" class="form-select">
+                        <option value="">-- Select Shift --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TargetQty" class="form-label fw-semibold">Target Qty <span class="text-danger">*</span></label>
+                    <input asp-for="TargetQty" class="form-control" type="number" step="0.001" />
+                    <span asp-validation-for="TargetQty" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="PlannedStartDate" class="form-label fw-semibold">Planned Start <span class="text-danger">*</span></label>
+                    <input asp-for="PlannedStartDate" class="form-control" type="date" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="PlannedEndDate" class="form-label fw-semibold">Planned End <span class="text-danger">*</span></label>
+                    <input asp-for="PlannedEndDate" class="form-control" type="date" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="Remarks" class="form-label fw-semibold">Remarks</label>
+                    <textarea asp-for="Remarks" class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Create Job Card</button>
+                <a asp-action="JobCards" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />

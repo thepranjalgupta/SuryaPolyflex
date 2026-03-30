@@ -1,0 +1,102 @@
+@model SuryaPolyFlex.Application.Features.Quotations.QuotationDto
+@{ ViewData["Title"] = "Quotation Details"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Quotation — @Model.QuotationNumber</h4>
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">← Back</a>
+</div>
+
+@if (TempData["Success"] != null)
+{ <div class="alert alert-success">@TempData["Success"]</div> }
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <small class="text-muted">Customer</small>
+                <div class="fw-semibold">@Model.CustomerName</div>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Date</small>
+                <div>@Model.QuotationDate.ToLocalTime().ToString("dd MMM yyyy")</div>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Valid Until</small>
+                <div>@Model.ValidUntil?.ToString("dd MMM yyyy")</div>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Status</small>
+                <div><span class="badge bg-primary">@Model.Status</span></div>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted">Total Amount</small>
+                <div class="fw-semibold text-success">₹@Model.TotalAmount.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>#</th><th>Description</th><th>Qty</th><th>Unit Rate</th><th>Disc%</th><th>Line Total</th></tr>
+            </thead>
+            <tbody>
+                @{ int sr = 1; }
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@sr++</td>
+                        <td>@item.Description</td>
+                        <td>@item.Qty @item.UoMCode</td>
+                        <td>₹@item.UnitRate</td>
+                        <td>@item.DiscountPct%</td>
+                        <td class="fw-semibold">₹@item.LineTotal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-light fw-semibold">
+                    <td colspan="5" class="text-end">Total</td>
+                    <td>₹@Model.TotalAmount.ToString("N2")</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="d-flex gap-2">
+    @if (Model.Status == "Draft")
+    {
+        <form asp-action="UpdateStatus" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="status" value="Sent" />
+            <button class="btn btn-primary">Mark as Sent</button>
+        </form>
+    }
+    @if (Model.Status == "Sent" || Model.Status == "Draft")
+    {
+        <form asp-action="UpdateStatus" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="status" value="Accepted" />
+            <button class="btn btn-success">✓ Mark Accepted</button>
+        </form>
+        <form asp-action="UpdateStatus" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <input type="hidden" name="status" value="Rejected" />
+            <button class="btn btn-outline-danger">✕ Mark Rejected</button>
+        </form>
+    }
+    @if (Model.Status == "Accepted")
+    {
+        <a asp-controller="SalesOrders" asp-action="Create"
+           class="btn btn-warning">→ Convert to Sales Order</a>
+    }
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

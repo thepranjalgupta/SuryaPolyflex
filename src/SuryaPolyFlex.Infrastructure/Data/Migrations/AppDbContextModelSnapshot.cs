@@ -616,6 +616,287 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.ToTable("WorkflowActions", "dbo");
                 });
 
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.ChallanItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChallanId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DispatchedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SOItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallanId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("SOItemId");
+
+                    b.ToTable("ChallanItems", "dispatch");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.DeliveryChallan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChallanDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ChallanNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeliveryAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DispatchPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DriverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EWayBillNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LRNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SOId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("TransporterId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallanNo")
+                        .IsUnique();
+
+                    b.HasIndex("DispatchPlanId");
+
+                    b.HasIndex("SOId");
+
+                    b.HasIndex("TransporterId");
+
+                    b.ToTable("DeliveryChallans", "dispatch");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.DispatchPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PlanNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("PlannedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanNo")
+                        .IsUnique();
+
+                    b.ToTable("DispatchPlans", "dispatch");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.DispatchPlanItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DispatchPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DispatchQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("SOId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DispatchPlanId");
+
+                    b.HasIndex("SOId");
+
+                    b.ToTable("DispatchPlanItems", "dispatch");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.Shipment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ActualDeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ChallanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CurrentStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeliveryRemarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EstimatedDeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PODDocument")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StatusUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("StatusUpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallanId")
+                        .IsUnique();
+
+                    b.ToTable("Shipments", "dispatch");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.Transporter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ContactPerson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GSTIN")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Transporters", "dispatch");
+                });
+
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Inventory.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -1049,6 +1330,77 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.ToTable("GRNItems", "proc");
                 });
 
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.GateEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DriverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EntryDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExitDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("GRNId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GateEntryNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("POId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PurchaseOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceivedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GateEntryNo")
+                        .IsUnique();
+
+                    b.HasIndex("PurchaseOrderId");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("GateEntries", "proc");
+                });
+
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.Indent", b =>
                 {
                     b.Property<int>("Id")
@@ -1157,6 +1509,117 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.HasIndex("ItemId");
 
                     b.ToTable("IndentItems", "proc");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.MaterialIssue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FromWarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IssueNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("IssuedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ToDepartmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("WorkOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IssueNo")
+                        .IsUnique();
+
+                    b.ToTable("MaterialIssues", "inv");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.MaterialIssueItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("IssuedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaterialIssueId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("RequestedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("UnitRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("MaterialIssueId");
+
+                    b.HasIndex("UoMId");
+
+                    b.ToTable("MaterialIssueItems", "inv");
                 });
 
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.POItem", b =>
@@ -1373,6 +1836,559 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.ToTable("Vendors", "proc");
                 });
 
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.BOM", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BOMNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RequestedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BOMNo")
+                        .IsUnique();
+
+                    b.HasIndex("JobCardId");
+
+                    b.ToTable("BOMs", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.BOMItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BOMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("IssuedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("RequiredQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BOMId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("UoMId");
+
+                    b.ToTable("BOMItems", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.FloorStock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("ConsumedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<decimal>("IssuedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LastUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("ReturnedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("JobCardId", "ItemId")
+                        .IsUnique();
+
+                    b.ToTable("FloorStocks", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.InkReturn", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReturnNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ReturnedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ToWarehouseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("ReturnNo")
+                        .IsUnique();
+
+                    b.ToTable("InkReturns", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.InkReturnItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InkReturnId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ReturnQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InkReturnId");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("InkReturnItems", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.JobCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CustomerJobId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobCardNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("MachineId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PlannedEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PlannedStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SOId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Shift")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TargetQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardNo")
+                        .IsUnique();
+
+                    b.HasIndex("MachineId");
+
+                    b.ToTable("JobCards", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.Machine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MachineCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MachineCode")
+                        .IsUnique();
+
+                    b.ToTable("Machines", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.ProductionEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DowntimeReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MachineDowntimeMin")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OperatorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ProducedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("WastageQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("WastageReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WorkOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkOrderId");
+
+                    b.ToTable("ProductionEntries", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.Scrap", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DisposalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DisposalMethod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DisposalValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ScrapDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ScrapNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("ScrapQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ScrapType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("ScrapNo")
+                        .IsUnique();
+
+                    b.ToTable("Scraps", "prod");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.WorkOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ActualEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ActualStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MachineId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Shift")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WONumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("MachineId");
+
+                    b.HasIndex("WONumber")
+                        .IsUnique();
+
+                    b.ToTable("WorkOrders", "prod");
+                });
+
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -1456,6 +2472,522 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.ToTable("Customers", "sales");
                 });
 
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.CustomerJob", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ColorCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Finish")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Length")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("SalesOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SpecialInstructions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Substrate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Width")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SalesOrderId");
+
+                    b.ToTable("CustomerJobs", "sales");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.Lead", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedToId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactPerson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ConvertedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("FollowUpDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Leads", "sales");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.Quotation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("LeadId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("QuotationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("QuotationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Revision")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Terms")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ValidUntil")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("LeadId");
+
+                    b.HasIndex("QuotationNumber")
+                        .IsUnique();
+
+                    b.ToTable("Quotations", "sales");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.QuotationItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DiscountPct")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Qty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("QuotationId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TaxPct")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("UnitRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("QuotationId");
+
+                    b.HasIndex("UoMId");
+
+                    b.ToTable("QuotationItems", "sales");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SOItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DispatchedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("OrderedQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<int>("SalesOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TaxPct")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal>("UnitRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("SalesOrderId");
+
+                    b.HasIndex("UoMId");
+
+                    b.ToTable("SOItems", "sales");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("POReference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("QuotationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RequiredByDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("SODate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SONumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("QuotationId");
+
+                    b.HasIndex("SONumber")
+                        .IsUnique();
+
+                    b.ToTable("SalesOrders", "sales");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesReturn", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApprovedById")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReturnNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SOId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalReturnValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("ReturnNo")
+                        .IsUnique();
+
+                    b.HasIndex("SOId");
+
+                    b.ToTable("SalesReturns", "sales");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesReturnItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ReturnQty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("ReturnReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SalesReturnId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitRate")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("UoMId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("SalesReturnId");
+
+                    b.ToTable("SalesReturnItems", "sales");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("SuryaPolyFlex.Domain.Entities.Core.ApplicationRole", null)
@@ -1536,6 +3068,86 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.ChallanItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Dispatch.DeliveryChallan", "Challan")
+                        .WithMany("Items")
+                        .HasForeignKey("ChallanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.SOItem", "SOItem")
+                        .WithMany()
+                        .HasForeignKey("SOItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Challan");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("SOItem");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.DeliveryChallan", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Dispatch.DispatchPlan", "DispatchPlan")
+                        .WithMany()
+                        .HasForeignKey("DispatchPlanId");
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", "SalesOrder")
+                        .WithMany()
+                        .HasForeignKey("SOId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Dispatch.Transporter", "Transporter")
+                        .WithMany()
+                        .HasForeignKey("TransporterId");
+
+                    b.Navigation("DispatchPlan");
+
+                    b.Navigation("SalesOrder");
+
+                    b.Navigation("Transporter");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.DispatchPlanItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Dispatch.DispatchPlan", "DispatchPlan")
+                        .WithMany("Items")
+                        .HasForeignKey("DispatchPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", "SalesOrder")
+                        .WithMany()
+                        .HasForeignKey("SOId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DispatchPlan");
+
+                    b.Navigation("SalesOrder");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.Shipment", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Dispatch.DeliveryChallan", "Challan")
+                        .WithOne("Shipment")
+                        .HasForeignKey("SuryaPolyFlex.Domain.Entities.Dispatch.Shipment", "ChallanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Challan");
                 });
 
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Inventory.Item", b =>
@@ -1633,6 +3245,23 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.Navigation("Item");
                 });
 
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.GateEntry", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Procurement.PurchaseOrder", "PurchaseOrder")
+                        .WithMany()
+                        .HasForeignKey("PurchaseOrderId");
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Procurement.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PurchaseOrder");
+
+                    b.Navigation("Vendor");
+                });
+
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.Indent", b =>
                 {
                     b.HasOne("SuryaPolyFlex.Domain.Entities.Core.Department", "Department")
@@ -1661,6 +3290,31 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.Navigation("Indent");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.MaterialIssueItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Procurement.MaterialIssue", "MaterialIssue")
+                        .WithMany("Items")
+                        .HasForeignKey("MaterialIssueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.UnitOfMeasure", "UoM")
+                        .WithMany()
+                        .HasForeignKey("UoMId");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("MaterialIssue");
+
+                    b.Navigation("UoM");
                 });
 
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.POItem", b =>
@@ -1699,9 +3353,300 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.BOM", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.JobCard", "JobCard")
+                        .WithMany("BOMs")
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobCard");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.BOMItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.BOM", "BOM")
+                        .WithMany("Items")
+                        .HasForeignKey("BOMId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.UnitOfMeasure", "UoM")
+                        .WithMany()
+                        .HasForeignKey("UoMId");
+
+                    b.Navigation("BOM");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("UoM");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.FloorStock", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.JobCard", "JobCard")
+                        .WithMany()
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("JobCard");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.InkReturn", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.JobCard", "JobCard")
+                        .WithMany()
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobCard");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.InkReturnItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.InkReturn", "InkReturn")
+                        .WithMany("Items")
+                        .HasForeignKey("InkReturnId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InkReturn");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.JobCard", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.Machine", "Machine")
+                        .WithMany()
+                        .HasForeignKey("MachineId");
+
+                    b.Navigation("Machine");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.ProductionEntry", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.WorkOrder", "WorkOrder")
+                        .WithMany("ProductionEntries")
+                        .HasForeignKey("WorkOrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("WorkOrder");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.Scrap", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.JobCard", "JobCard")
+                        .WithMany()
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("JobCard");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.WorkOrder", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.JobCard", "JobCard")
+                        .WithMany("WorkOrders")
+                        .HasForeignKey("JobCardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Production.Machine", "Machine")
+                        .WithMany()
+                        .HasForeignKey("MachineId");
+
+                    b.Navigation("JobCard");
+
+                    b.Navigation("Machine");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.CustomerJob", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", "SalesOrder")
+                        .WithMany("CustomerJobs")
+                        .HasForeignKey("SalesOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SalesOrder");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.Lead", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.Quotation", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.Lead", "Lead")
+                        .WithMany()
+                        .HasForeignKey("LeadId");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Lead");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.QuotationItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.Quotation", "Quotation")
+                        .WithMany("Items")
+                        .HasForeignKey("QuotationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.UnitOfMeasure", "UoM")
+                        .WithMany()
+                        .HasForeignKey("UoMId");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Quotation");
+
+                    b.Navigation("UoM");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SOItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", "SalesOrder")
+                        .WithMany("Items")
+                        .HasForeignKey("SalesOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.UnitOfMeasure", "UoM")
+                        .WithMany()
+                        .HasForeignKey("UoMId");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("SalesOrder");
+
+                    b.Navigation("UoM");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.Quotation", "Quotation")
+                        .WithMany()
+                        .HasForeignKey("QuotationId");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Quotation");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesReturn", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", "SalesOrder")
+                        .WithMany()
+                        .HasForeignKey("SOId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("SalesOrder");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesReturnItem", b =>
+                {
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Inventory.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("SuryaPolyFlex.Domain.Entities.Sales.SalesReturn", "SalesReturn")
+                        .WithMany("Items")
+                        .HasForeignKey("SalesReturnId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("SalesReturn");
+                });
+
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Core.Department", b =>
                 {
                     b.Navigation("Employees");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.DeliveryChallan", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Shipment");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.DispatchPlan", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Inventory.ItemCategory", b =>
@@ -1719,7 +3664,51 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.MaterialIssue", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Procurement.PurchaseOrder", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.BOM", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.InkReturn", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.JobCard", b =>
+                {
+                    b.Navigation("BOMs");
+
+                    b.Navigation("WorkOrders");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Production.WorkOrder", b =>
+                {
+                    b.Navigation("ProductionEntries");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.Quotation", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesOrder", b =>
+                {
+                    b.Navigation("CustomerJobs");
+
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Sales.SalesReturn", b =>
                 {
                     b.Navigation("Items");
                 });

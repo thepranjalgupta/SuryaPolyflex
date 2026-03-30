@@ -1,0 +1,82 @@
+@model List<SuryaPolyFlex.Application.Features.Dispatch.TransporterDto>
+@{ ViewData["Title"] = "Transporters"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Transporters</h4>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+            data-bs-target="#addTransporterModal">+ Add Transporter</button>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover table-sm">
+            <thead class="table-dark">
+                <tr><th>Name</th><th>Contact</th><th>Phone</th><th>GSTIN</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-muted">No transporters found.</td></tr>
+                }
+                @foreach (var t in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@t.Name</td>
+                        <td class="small">@t.ContactPerson</td>
+                        <td class="small">@t.Phone</td>
+                        <td class="small">@t.GSTIN</td>
+                        <td><span class="badge @(t.IsActive ? "bg-success" : "bg-danger")">
+                            @(t.IsActive ? "Active" : "Inactive")</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Transporter Modal -->
+<div class="modal fade" id="addTransporterModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Add Transporter</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CreateTransporter" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+                        <input name="Name" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Contact Person</label>
+                        <input name="ContactPerson" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Phone</label>
+                        <input name="Phone" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">GSTIN</label>
+                        <input name="GSTIN" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

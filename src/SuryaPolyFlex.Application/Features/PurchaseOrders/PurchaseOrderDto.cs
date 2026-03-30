@@ -55,3 +55,8 @@ public class CreatePOItemDto
     public decimal TaxPct { get; set; } = 0;
     public string? Remarks { get; set; }
 }
+public class IndentItemForPODto
+{
+    public int ItemId { get; set; }
+    public decimal Qty { get; set; } 
+}

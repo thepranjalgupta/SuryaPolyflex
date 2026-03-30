@@ -1,0 +1,55 @@
+@model List<SuryaPolyFlex.Application.Features.Production.WorkOrderDto>
+@{ ViewData["Title"] = "Work Orders"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Work Orders</h4>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>WO Number</th><th>Machine</th><th>Shift</th>
+                    <th>Produced</th><th>Wastage</th><th>Start</th>
+                    <th>Status</th><th style="width:80px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center text-muted">No work orders found.</td></tr>
+                }
+                @foreach (var wo in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold text-primary">@wo.WONumber</td>
+                        <td>@wo.MachineName</td>
+                        <td>@wo.Shift</td>
+                        <td class="text-success fw-semibold">@wo.TotalProduced</td>
+                        <td class="text-danger">@wo.TotalWastage</td>
+                        <td class="small">@wo.ActualStartDate?.ToString("dd MMM yyyy")</td>
+                        <td>
+                            @{
+                                var c = wo.Status switch {
+                                    "Open"      => "bg-secondary",
+                                    "Running"   => "bg-info text-dark",
+                                    "Paused"    => "bg-warning text-dark",
+                                    "Completed" => "bg-success",
+                                    _           => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @c">@wo.Status</span>
+                        </td>
+                        <td>
+                            <a asp-action="WorkOrderDetails" asp-route-id="@wo.Id"
+                               class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

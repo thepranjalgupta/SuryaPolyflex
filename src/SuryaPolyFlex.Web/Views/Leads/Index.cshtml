@@ -1,0 +1,89 @@
+@model List<SuryaPolyFlex.Application.Features.Leads.LeadDto>
+@{ ViewData["Title"] = "Leads"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Leads / Enquiries</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ New Lead</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="get" class="d-flex gap-2 mb-3">
+            <select name="status" class="form-select form-select-sm w-auto">
+                <option value="">All Statuses</option>
+                @foreach (var s in new[]{"New","Contacted","Qualified","QuotationSent","Converted","Lost"})
+                {
+                    <option value="@s" selected="@(ViewBag.Status == s)">@s</option>
+                }
+            </select>
+            <button class="btn btn-sm btn-outline-secondary">Filter</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-danger">Clear</a>
+        </form>
+
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th><th>Customer</th><th>Contact</th>
+                    <th>Source</th><th>Follow Up</th><th>Status</th>
+                    <th style="width:140px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted">No leads found.</td></tr>
+                }
+                @foreach (var l in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@l.Title</td>
+                        <td>@l.CustomerName</td>
+                        <td class="small">@l.ContactPerson</td>
+                        <td class="small">@l.Source</td>
+                        <td class="small @(l.FollowUpDate < DateTime.Now && l.Status != "Converted" && l.Status != "Lost" ? "text-danger fw-semibold" : "")">
+                            @l.FollowUpDate?.ToString("dd MMM yyyy")
+                        </td>
+                        <td>
+                            @{
+                                var c = l.Status switch {
+                                    "New"           => "bg-secondary",
+                                    "Contacted"     => "bg-info text-dark",
+                                    "Qualified"     => "bg-primary",
+                                    "QuotationSent" => "bg-warning text-dark",
+                                    "Converted"     => "bg-success",
+                                    "Lost"          => "bg-danger",
+                                    _               => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @c">@l.Status</span>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@l.Id"
+                               class="btn btn-sm btn-outline-primary">Edit</a>
+                            @if (l.Status != "Converted" && l.Status != "Lost")
+                            {
+                                <form asp-action="Convert" asp-route-id="@l.Id"
+                                      method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-outline-success"
+                                            onclick="return confirm('Mark as converted?')">
+                                        ✓
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

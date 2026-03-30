@@ -14,6 +14,14 @@ using SuryaPolyFlex.Application.Features.Warehouses;
 using SuryaPolyFlex.Application.Features.Indents;
 using SuryaPolyFlex.Application.Features.PurchaseOrders;
 using SuryaPolyFlex.Application.Features.GRN;
+using SuryaPolyFlex.Application.Features.Leads;
+using SuryaPolyFlex.Application.Features.Quotations;
+using SuryaPolyFlex.Application.Features.SalesOrders;
+using SuryaPolyFlex.Application.Features.Production;
+using SuryaPolyFlex.Application.Features.MaterialIssue;
+using SuryaPolyFlex.Application.Features.Dispatch;
+
+
 
 
 
@@ -62,6 +70,15 @@ builder.Services.AddScoped<IIndentService, IndentService>();
 builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 builder.Services.AddScoped<IGRNService, GRNService>();
 builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddScoped<ILeadService, LeadService>();
+builder.Services.AddScoped<IQuotationService, QuotationService>();
+builder.Services.AddScoped<ISalesOrderService, SalesOrderService>();
+builder.Services.AddScoped<IProductionService, ProductionService>();
+builder.Services.AddScoped<IMaterialIssueService, MaterialIssueService>();
+builder.Services.AddScoped<IDispatchService, DispatchService>();
+builder.Services.AddScoped<SalesReturnService>();
+builder.Services.AddScoped<GateEntryService>();
+
 
 
 

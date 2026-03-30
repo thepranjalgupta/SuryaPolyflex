@@ -1,0 +1,91 @@
+@model SuryaPolyFlex.Application.Features.Production.CreateBOMDto
+@{
+    ViewData["Title"] = "BOM Request";
+    var itemsList = ViewBag.Items as List<SuryaPolyFlex.Application.Features.Items.ItemSelectDto>
+                    ?? new List<SuryaPolyFlex.Application.Features.Items.ItemSelectDto>();
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-info text-white"><h5 class="mb-0">BOM Request — Job Card</h5></div>
+    <div class="card-body">
+        <form asp-action="CreateBOM" method="post" id="bomForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="JobCardId" value="@Model.JobCardId" />
+
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Item</th>
+                        <th style="width:150px">Required Qty</th>
+                        <th style="width:50px"></th>
+                    </tr>
+                </thead>
+                <tbody id="bomBody"></tbody>
+            </table>
+
+            <div id="noBOMMsg" class="text-muted small mb-2">No items added yet.</div>
+            <button type="button" class="btn btn-sm btn-outline-primary mb-3"
+                    onclick="addBOMRow()">+ Add Item</button>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Remarks</label>
+                <input name="Remarks" class="form-control" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-info text-white">Submit BOM Request</button>
+                <a asp-action="JobCardDetails" asp-route-id="@Model.JobCardId"
+                   class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const items = [
+        @foreach (var item in itemsList)
+        {
+            @Html.Raw($"{{ id: {item.Id}, code: '{item.ItemCode}', name: '{item.Name.Replace("'", "\\'")}', uom: '{item.UoMCode}' }},")
+        }
+    ];
+
+    let bomIndex = 0;
+
+    function addBOMRow() {
+        document.getElementById('noBOMMsg').style.display = 'none';
+        const tbody = document.getElementById('bomBody');
+        const tr    = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <select name="Items[${bomIndex}].ItemId"
+                        class="form-select form-select-sm" required>
+                    <option value="">-- Select Item --</option>
+                    ${items.map(i => `<option value="${i.id}">${i.code} - ${i.name} (${i.uom})</option>`).join('')}
+                </select>
+            </td>
+            <td>
+                <input type="number" name="Items[${bomIndex}].RequiredQty"
+                       class="form-control form-control-sm"
+                       step="0.001" min="0.001" required />
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        onclick="this.closest('tr').remove(); reindex()">✕</button>
+            </td>`;
+        tbody.appendChild(tr);
+        bomIndex++;
+        reindex();
+    }
+
+    function reindex() {
+        document.getElementById('bomBody').querySelectorAll('tr').forEach((row, i) => {
+            row.querySelectorAll('[name]').forEach(el => {
+                el.name = el.name.replace(/Items\[\d+\]/, `Items[${i}]`);
+            });
+        });
+        bomIndex = document.getElementById('bomBody').querySelectorAll('tr').length;
+    }
+</script>

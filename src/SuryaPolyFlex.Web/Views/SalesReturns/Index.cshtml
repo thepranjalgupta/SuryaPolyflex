@@ -1,0 +1,59 @@
+@model List<SuryaPolyFlex.Application.Features.SalesOrders.SalesReturnDto>
+@{ ViewData["Title"] = "Sales Returns"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Sales Returns</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ New Return</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Return No</th><th>Date</th><th>Sales Order</th>
+                    <th>Customer</th><th>Value</th><th>Status</th>
+                    <th style="width:80px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="text-center text-muted">No returns found.</td></tr>
+                }
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold text-primary">@r.ReturnNo</td>
+                        <td class="small">@r.ReturnDate.ToLocalTime().ToString("dd MMM yyyy")</td>
+                        <td>@r.SONumber</td>
+                        <td>@r.CustomerName</td>
+                        <td>₹@r.TotalReturnValue.ToString("N2")</td>
+                        <td>
+                            @{
+                                var c = r.Status switch {
+                                    "Pending"   => "bg-warning text-dark",
+                                    "Restocked" => "bg-success",
+                                    "Approved"  => "bg-info text-dark",
+                                    _           => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @c">@r.Status</span>
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@r.Id"
+                               class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

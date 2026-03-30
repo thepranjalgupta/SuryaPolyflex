@@ -70,6 +70,8 @@ public static class SeedData
             ("DC",     "DC"),
             ("GATE",   "GATE"),
             ("QTN",    "QTN"),
+            ("MIS", "MIS"),
+            ("WO", "WO"),
         };
 
         foreach (var (moduleCode, prefix) in moduleCodes)

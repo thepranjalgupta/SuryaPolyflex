@@ -1,0 +1,54 @@
+@model SuryaPolyFlex.Application.Features.SalesOrders.CreateCustomerJobDto
+@{ ViewData["Title"] = "Add Customer Job"; }
+
+<div class="card shadow-sm mx-auto" style="max-width:580px">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Add Customer Job — @ViewBag.SONumber</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddJob" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="SalesOrderId" type="hidden" />
+            <div class="row g-3">
+                <div class="col-12">
+                    <label asp-for="JobTitle" class="form-label fw-semibold">Job Title <span class="text-danger">*</span></label>
+                    <input asp-for="JobTitle" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Substrate" class="form-label fw-semibold">Substrate</label>
+                    <input asp-for="Substrate" class="form-control" placeholder="e.g. BOPP, PET" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Width" class="form-label fw-semibold">Width (mm)</label>
+                    <input asp-for="Width" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Length" class="form-label fw-semibold">Length (mm)</label>
+                    <input asp-for="Length" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="ColorCount" class="form-label fw-semibold">Color Count</label>
+                    <input asp-for="ColorCount" class="form-control" type="number" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Finish" class="form-label fw-semibold">Finish</label>
+                    <input asp-for="Finish" class="form-control" placeholder="e.g. Gloss, Matte" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Quantity" class="form-label fw-semibold">Quantity <span class="text-danger">*</span></label>
+                    <input asp-for="Quantity" class="form-control" type="number" step="0.001" />
+                </div>
+                <div class="col-12">
+                    <label asp-for="SpecialInstructions" class="form-label fw-semibold">Special Instructions</label>
+                    <textarea asp-for="SpecialInstructions" class="form-control" rows="2"></textarea>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">Add Job</button>
+                <a asp-action="Details" asp-route-id="@Model.SalesOrderId"
+                   class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />

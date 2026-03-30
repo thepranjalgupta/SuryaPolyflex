@@ -1,0 +1,121 @@
+@model SuryaPolyFlex.Application.Features.SalesOrders.CreateSalesReturnDto
+@{ ViewData["Title"] = "New Sales Return"; }
+
+<div class="card shadow-sm">
+    <div class="card-header bg-danger text-white"><h5 class="mb-0">New Sales Return</h5></div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" id="returnForm">
+            @Html.AntiForgeryToken()
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="SOId" class="form-label fw-semibold">Sales Order <span class="text-danger">*</span></label>
+                    <select asp-for="SOId" asp-items="ViewBag.SalesOrders" class="form-select" onchange="loadSOItems()">
+                        <option value="">-- Select SO --</option>
+                    </select>
+                    <span asp-validation-for="SOId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-8">
+                    <label asp-for="Reason" class="form-label fw-semibold">Return Reason <span class="text-danger">*</span></label>
+                    <input asp-for="Reason" class="form-control" placeholder="e.g. Damaged goods, Wrong item" />
+                    <span asp-validation-for="Reason" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Remarks" class="form-label fw-semibold">Remarks</label>
+                    <input asp-for="Remarks" class="form-control" />
+                </div>
+            </div>
+
+            <h6 class="fw-semibold mb-2">Return Items <span class="text-danger">*</span></h6>
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Description</th>
+                        <th style="width:130px">Return Qty</th>
+                        <th style="width:130px">Unit Rate (₹)</th>
+                        <th style="width:180px">Reason</th>
+                        <th style="width:50px"></th>
+                    </tr>
+                </thead>
+                <tbody id="returnBody"></tbody>
+            </table>
+
+            <div id="noReturnMsg" class="text-muted small mb-2">No items added.</div>
+            <button type="button" class="btn btn-sm btn-outline-danger mb-3"
+                    onclick="addReturnRow()">+ Add Item</button>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Create Return</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let retIndex = 0;
+
+    function loadSOItems() {
+        const soSelect = document.getElementById('SOId') || document.querySelector('select[name="SOId"]');
+        const soId = soSelect ? soSelect.value : null;
+        if (!soId) {
+            clearReturnItems();
+            return;
+        }
+
+        fetch(`@Url.Action("GetSOItems", "SalesReturns")?soId=${soId}`)
+            .then(response => response.json())
+            .then(items => {
+                clearReturnItems();
+                items.forEach(item => addReturnRow(item));
+            })
+            .catch(error => console.error('Error loading SO items:', error));
+    }
+
+    function clearReturnItems() {
+        document.getElementById('returnBody').innerHTML = '';
+        retIndex = 0;
+        document.getElementById('noReturnMsg').style.display = 'block';
+    }
+
+    function addReturnRow(item = null) {
+        document.getElementById('noReturnMsg').style.display = 'none';
+        const tbody = document.getElementById('returnBody');
+        const tr    = document.createElement('tr');
+        const desc  = item ? item.Description : '';
+        const qty   = item ? item.OrderedQty : '';
+        const rate  = item ? item.UnitRate : '0';
+        tr.innerHTML = `
+            <td><input type="text" name="Items[${retIndex}].Description"
+                   class="form-control form-control-sm" value="${desc}" required /></td>
+            <td><input type="number" name="Items[${retIndex}].ReturnQty"
+                   class="form-control form-control-sm" step="0.001" min="0.001" value="${qty}" required /></td>
+            <td><input type="number" name="Items[${retIndex}].UnitRate"
+                   class="form-control form-control-sm" step="0.01" min="0" value="${rate}" /></td>
+            <td><input type="text" name="Items[${retIndex}].ReturnReason"
+                   class="form-control form-control-sm" /></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        onclick="this.closest('tr').remove(); reindexReturn()">✕</button>
+            </td>`;
+        tbody.appendChild(tr);
+        retIndex++;
+        reindexReturn();
+    }
+
+    function reindexReturn() {
+        document.getElementById('returnBody').querySelectorAll('tr').forEach((row, i) => {
+            row.querySelectorAll('[name]').forEach(el => {
+                el.name = el.name.replace(/Items\[\d+\]/, `Items[${i}]`);
+            });
+        });
+        retIndex = document.getElementById('returnBody').querySelectorAll('tr').length;
+    }
+
+    // Load items if SO is pre-selected
+    document.addEventListener('DOMContentLoaded', function() {
+        const soSelect = document.getElementById('SOId') || document.querySelector('select[name="SOId"]');
+        if (soSelect && soSelect.value) {
+            loadSOItems();
+        }
+    });
+</script>

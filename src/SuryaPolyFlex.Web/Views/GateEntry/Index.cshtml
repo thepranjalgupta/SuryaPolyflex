@@ -1,0 +1,70 @@
+@model List<SuryaPolyFlex.Application.Features.GateEntry.GateEntryDto>
+@{ ViewData["Title"] = "Gate Entry"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Gate Entry Register</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ New Entry</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"] <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Gate Entry No</th><th>Vendor</th><th>PO Number</th>
+                    <th>Vehicle</th><th>Driver</th><th>Entry Time</th>
+                    <th>Exit Time</th><th>GRN</th><th style="width:80px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="9" class="text-center text-muted">No entries found.</td></tr>
+                }
+                @foreach (var g in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@g.GateEntryNo</td>
+                        <td>@g.VendorName</td>
+                        <td class="small">@(g.PONumber ?? "—")</td>
+                        <td class="small">@g.VehicleNumber</td>
+                        <td class="small">@g.DriverName</td>
+                        <td class="small">@g.EntryDateTime.ToLocalTime().ToString("dd MMM HH:mm")</td>
+                        <td class="small">
+                            @(g.ExitDateTime.HasValue
+                                ? g.ExitDateTime.Value.ToLocalTime().ToString("dd MMM HH:mm")
+                                : "—")
+                        </td>
+                        <td>
+                            @if (g.GRNCreated)
+                            {
+                                <span class="badge bg-success">Done</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Pending</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!g.ExitDateTime.HasValue)
+                            {
+                                <form asp-action="MarkExit" asp-route-id="@g.Id"
+                                      method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button class="btn btn-sm btn-outline-warning">Exit</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
