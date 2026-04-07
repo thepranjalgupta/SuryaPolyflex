@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SuryaPolyFlex.Application.Common;
+using SuryaPolyFlex.Application.Common.Interfaces;
 using SuryaPolyFlex.Application.Features.Departments;
 using SuryaPolyFlex.Application.Features.Employees;
+using SuryaPolyFlex.Domain.Entities.Core;
 using SuryaPolyFlex.Web.Filters;
 
 namespace SuryaPolyFlex.Web.Controllers;
@@ -13,13 +16,19 @@ public class EmployeesController : Controller
 {
     private readonly IEmployeeService _employeeService;
     private readonly IDepartmentService _departmentService;
+    private readonly IPermissionService _permissionService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public EmployeesController(
         IEmployeeService employeeService,
-        IDepartmentService departmentService)
+        IDepartmentService departmentService,
+        IPermissionService permissionService,
+        UserManager<ApplicationUser> userManager)
     {
         _employeeService   = employeeService;
         _departmentService = departmentService;
+        _permissionService = permissionService;
+        _userManager       = userManager;
     }
 
     [RequirePermission(Permissions.Employees.View)]
@@ -65,6 +74,22 @@ public class EmployeesController : Controller
     {
         var emp = await _employeeService.GetByIdAsync(id);
         if (emp == null) return NotFound();
+
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var appUser = await _userManager.FindByIdAsync(userId);
+            var userDepartmentId = appUser?.DepartmentId;
+
+            var hasDynamicPermission = await _permissionService.HasPermissionAsync(userId, Permissions.Employees.Edit, new Dictionary<string, object>
+            {
+                ["resource.DepartmentId"] = emp.DepartmentId,
+                ["user.DepartmentId"] = userDepartmentId
+            });
+
+            if (!hasDynamicPermission)
+                return Forbid();
+        }
 
         await LoadDepartmentsAsync();
         return View(new EditEmployeeDto

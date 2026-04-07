@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SuryaPolyFlex.Application.Common;
 using SuryaPolyFlex.Application.Features.Dispatch;
 using SuryaPolyFlex.Application.Features.SalesOrders;
+using SuryaPolyFlex.Web.Filters;
 
 namespace SuryaPolyFlex.Web.Controllers;
 
@@ -21,6 +23,7 @@ public class DispatchController : Controller
     }
 
     // ── TRANSPORTERS ──────────────────────────────────────────────────────
+    [RequirePermission(Permissions.Dispatch.View)]
     public async Task<IActionResult> Transporters()
         => View(await _dispatchService.GetTransportersAsync());
 

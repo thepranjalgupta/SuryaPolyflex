@@ -1,0 +1,48 @@
+@model SuryaPolyFlex.Domain.Entities.Core.Permission
+@{ ViewData["Title"] = "Permission Details"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Permission: @Model.Name</h4>
+    <a asp-action="Permissions" class="btn btn-sm btn-outline-secondary">← Back to List</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-dark text-white">
+        <h6 class="mb-0"><i class="fas fa-key me-2"></i>Permission Details</h6>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Name</dt>
+            <dd class="col-sm-9"><strong>@Model.Name</strong></dd>
+            <dt class="col-sm-3">Module</dt>
+            <dd class="col-sm-9">@Model.Module</dd>
+            <dt class="col-sm-3">Action</dt>
+            <dd class="col-sm-9">@Model.Action</dd>
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+            <dt class="col-sm-3">Status</dt>
+            <dd class="col-sm-9">
+                @if (!Model.IsDeleted)
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Deleted</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+    <a asp-action="Rules" asp-route-permissionId="@Model.Id" class="btn btn-info">
+        <i class="fas fa-gavel me-1"></i> Manage Rules
+    </a>
+    <a asp-action="RolePermissions" asp-route-roleId="" class="btn btn-secondary">
+        <i class="fas fa-users-cog me-1"></i> Role Assignments
+    </a>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

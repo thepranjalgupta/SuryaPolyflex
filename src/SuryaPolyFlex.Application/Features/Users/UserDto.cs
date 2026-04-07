@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using SuryaPolyFlex.Domain.Enums;
 
 namespace SuryaPolyFlex.Application.Features.Users;
 
@@ -12,6 +13,11 @@ public class UserDto
     public DateTime CreatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
     public List<string> Roles { get; set; } = new();
+    public AuthorityRole AuthorityRole { get; set; } = AuthorityRole.Employee;
+    public int? DepartmentId { get; set; }
+    public string? DepartmentName { get; set; }
+    public int? EmployeeId { get; set; }
+    public string? EmployeeName { get; set; }
 }
 
 public class CreateUserDto
@@ -36,6 +42,7 @@ public class CreateUserDto
 
     public int? EmployeeId { get; set; }
     public int? DepartmentId { get; set; }
+    public AuthorityRole AuthorityRole { get; set; } = AuthorityRole.Employee;
 }
 
 public class EditUserDto
@@ -53,6 +60,7 @@ public class EditUserDto
     public int? EmployeeId { get; set; }
     public int? DepartmentId { get; set; }
     public bool IsActive { get; set; }
+    public AuthorityRole AuthorityRole { get; set; } = AuthorityRole.Employee;
 }
 
 public class ResetPasswordDto

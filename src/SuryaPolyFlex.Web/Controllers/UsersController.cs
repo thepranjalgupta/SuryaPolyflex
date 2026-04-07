@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SuryaPolyFlex.Application.Common;
+using SuryaPolyFlex.Application.Common.Interfaces;
 using SuryaPolyFlex.Application.Features.Departments;
 using SuryaPolyFlex.Application.Features.Employees;
 using SuryaPolyFlex.Application.Features.Users;
+using SuryaPolyFlex.Domain.Enums;
 using SuryaPolyFlex.Web.Filters;
 
 namespace SuryaPolyFlex.Web.Controllers;
@@ -15,15 +17,18 @@ public class UsersController : Controller
     private readonly IUserService _userService;
     private readonly IDepartmentService _departmentService;
     private readonly IEmployeeService _employeeService;
+    private readonly IPermissionService _permissionService;
 
     public UsersController(
         IUserService userService,
         IDepartmentService departmentService,
-        IEmployeeService employeeService)
+        IEmployeeService employeeService,
+        IPermissionService permissionService)
     {
         _userService       = userService;
         _departmentService = departmentService;
         _employeeService   = employeeService;
+        _permissionService = permissionService;
     }
 
     [RequirePermission(Permissions.Users.View)]
@@ -73,11 +78,14 @@ public class UsersController : Controller
         await LoadDropdownsAsync();
         return View(new EditUserDto
         {
-            Id           = user.Id,
-            FullName     = user.FullName,
-            Phone        = user.Phone,
-            RoleName     = user.Roles.FirstOrDefault() ?? "",
-            IsActive     = user.IsActive
+            Id            = user.Id,
+            FullName      = user.FullName,
+            Phone         = user.Phone,
+            RoleName      = user.Roles.FirstOrDefault() ?? "",
+            DepartmentId  = user.DepartmentId,
+            AuthorityRole = user.AuthorityRole,
+            EmployeeId    = user.EmployeeId,
+            IsActive      = user.IsActive
         });
     }
 
@@ -142,14 +150,112 @@ public class UsersController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    // ── Permission Override Management ────────────────────────────────
+    
+    [RequirePermission(Permissions.Users.Edit)]
+    public async Task<IActionResult> UserPermissionOverrides(string userId)
+    {
+        var user = await _userService.GetByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        var overrides = await _permissionService.GetUserPermissionOverridesAsync(userId);
+        var allPermissions = await _permissionService.GetAllPermissionsAsync();
+
+        ViewBag.UserId = userId;
+        ViewBag.UserName = user.FullName;
+        ViewBag.AllPermissions = allPermissions;
+
+        return View(overrides);
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [RequirePermission(Permissions.Users.Edit)]
+    public async Task<IActionResult> GrantUserPermission(string userId, int permissionId, int? expiryDays = null)
+    {
+        var user = await _userService.GetByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        try
+        {
+            var expiryDate = expiryDays.HasValue && expiryDays > 0
+                ? DateTime.Now.AddDays(expiryDays.Value)
+                : (DateTime?)null;
+
+            await _permissionService.GrantUserPermissionAsync(
+                userId,
+                permissionId,
+                User.Identity?.Name ?? "SYSTEM",
+                expiryDate);
+
+            TempData["Success"] = "Permission granted successfully.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(UserPermissionOverrides), new { userId });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [RequirePermission(Permissions.Users.Edit)]
+    public async Task<IActionResult> DenyUserPermission(string userId, int permissionId, int? expiryDays = null)
+    {
+        var user = await _userService.GetByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        try
+        {
+            var expiryDate = expiryDays.HasValue && expiryDays > 0
+                ? DateTime.Now.AddDays(expiryDays.Value)
+                : (DateTime?)null;
+
+            await _permissionService.DenyUserPermissionAsync(
+                userId,
+                permissionId,
+                User.Identity?.Name ?? "SYSTEM",
+                expiryDate);
+
+            TempData["Success"] = "Permission denied successfully.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(UserPermissionOverrides), new { userId });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    [RequirePermission(Permissions.Users.Edit)]
+    public async Task<IActionResult> RevokeUserPermission(string userId, int permissionId)
+    {
+        var user = await _userService.GetByIdAsync(userId);
+        if (user == null) return NotFound();
+
+        var success = await _permissionService.RevokeUserPermissionAsync(userId, permissionId);
+
+        if (success)
+            TempData["Success"] = "Permission override revoked successfully.";
+        else
+            TempData["Error"] = "Failed to revoke permission override.";
+
+        return RedirectToAction(nameof(UserPermissionOverrides), new { userId });
+    }
+
     private async Task LoadDropdownsAsync()
     {
         var roles       = await _userService.GetAllRolesAsync();
         var departments = await _departmentService.GetAllAsync();
         var employees   = await _employeeService.GetAllAsync();
+        var permissions = await _permissionService.GetAllPermissionsAsync();
 
-        ViewBag.Roles       = new SelectList(roles);
-        ViewBag.Departments = new SelectList(departments, "Id", "Name");
-        ViewBag.Employees   = new SelectList(employees, "Id", "FullName");
+        ViewBag.Roles           = new SelectList(roles);
+        ViewBag.Departments     = new SelectList(departments, "Id", "Name");
+        ViewBag.Employees       = new SelectList(employees, "Id", "FullName");
+        ViewBag.AuthorityRoles  = new SelectList(Enum.GetValues(typeof(AuthorityRole))
+            .Cast<AuthorityRole>()
+            .Select(r => new { Value = r, Text = r.ToString() }), "Value", "Text");
+        ViewBag.AllPermissions  = permissions.OrderBy(p => p.Module).ThenBy(p => p.Action).ToList();
     }
 }

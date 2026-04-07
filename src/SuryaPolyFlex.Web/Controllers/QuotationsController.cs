@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SuryaPolyFlex.Application.Common;
 using SuryaPolyFlex.Application.Features.Customers;
 using SuryaPolyFlex.Application.Features.Items;
 using SuryaPolyFlex.Application.Features.Quotations;
+using SuryaPolyFlex.Web.Filters;
 
 namespace SuryaPolyFlex.Web.Controllers;
 
 [Authorize]
-public class QuotationsController : Controller
+[RequirePermission(Permissions.Quotations.View)]
+    public class QuotationsController : Controller
 {
     private readonly IQuotationService _service;
     private readonly ICustomerService  _customerService;
@@ -24,6 +27,7 @@ public class QuotationsController : Controller
         _itemService     = itemService;
     }
 
+    [RequirePermission(Permissions.Quotations.View)]
     public async Task<IActionResult> Index(string? status)
     {
         ViewBag.Status = status;

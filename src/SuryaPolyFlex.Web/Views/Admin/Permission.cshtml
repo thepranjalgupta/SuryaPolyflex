@@ -1,0 +1,91 @@
+@model SuryaPolyFlex.Domain.Entities.Core.Permission
+@{ ViewData["Title"] = "Permission Details"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-key me-2 text-primary"></i>Permission Details</h4>
+    <div>
+        <a asp-action="Permissions" class="btn btn-sm btn-outline-dark me-2">
+            <i class="fas fa-arrow-left me-1"></i> Back to List
+        </a>
+        <a asp-action="Index" class="btn btn-sm btn-outline-dark">
+            <i class="fas fa-cogs me-1"></i> Admin Home
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Permission Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9"><code>@Model.Name</code></dd>
+
+                    <dt class="col-sm-3">Module</dt>
+                    <dd class="col-sm-9"><span class="badge bg-secondary">@Model.Module</span></dd>
+
+                    <dt class="col-sm-3">Action</dt>
+                    <dd class="col-sm-9"><span class="badge bg-info">@Model.Action</span></dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">@Model.Description</dd>
+
+                    <dt class="col-sm-3">Created</dt>
+                    <dd class="col-sm-9">@Model.CreatedAt.ToString("g") by @Model.CreatedBy</dd>
+
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <dt class="col-sm-3">Updated</dt>
+                        <dd class="col-sm-9">@Model.UpdatedAt.Value.ToString("g") by @Model.UpdatedBy</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0">Actions</h6>
+            </div>
+            <div class="card-body">
+                <a asp-action="Rules" asp-route-permissionId="@Model.Id" class="btn btn-info w-100 mb-2">
+                    <i class="fas fa-gavel me-1"></i> View Rules
+                </a>
+                <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                    <i class="fas fa-trash me-1"></i> Delete Permission
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Permission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this permission? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="DeletePermission" method="post" style="display:inline;">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

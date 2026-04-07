@@ -1,0 +1,123 @@
+@model List<SuryaPolyFlex.Domain.Entities.Core.RolePermission>
+@using SuryaPolyFlex.Domain.Entities.Core
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Role Permissions";
+    var roleId = ViewBag.RoleId as string;
+    var allRoles = (ViewBag.AllRoles as List<string>) ?? new List<string>();
+    var allPermissions = (ViewBag.AllPermissions as List<Permission>) ?? new List<Permission>();
+    var assignedPermissionIds = Model.Select(m => m.PermissionId).ToHashSet();
+    var availablePermissions = allPermissions.Where(p => !assignedPermissionIds.Contains(p.Id)).ToList();
+    var roleSelectList = new SelectList(allRoles.Select(r => new SelectListItem { Value = r, Text = r, Selected = r == roleId }), "Value", "Text");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-users-cog me-2 text-primary"></i>Role Permissions</h4>
+    <a asp-action="Permissions" class="btn btn-sm btn-outline-secondary">← Back</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">@TempData["Error"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <form method="get" class="d-flex gap-2 align-items-center mb-0">
+            <label class="fw-semibold">Select Role:</label>
+            <select name="roleId" class="form-select form-select-sm w-auto">
+                <option value="">-- Select Role --</option>
+                @foreach (var item in roleSelectList)
+                {
+                    <option value="@item.Value" selected="@item.Selected">@item.Text</option>
+                }
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Load</button>
+        </form>
+    </div>
+    <div class="card-body">
+        @if (!string.IsNullOrEmpty(roleId))
+        {
+            <div class="mb-3">
+                <a asp-action="Permissions" class="btn btn-sm btn-outline-dark">← Back to Permissions</a>
+            </div>
+
+            <!-- Assigned Permissions -->
+            <h6 class="fw-bold text-success mb-2"><i class="fas fa-check-circle me-1"></i> Assigned Permissions</h6>
+            @if (!Model.Any())
+            {
+                <p class="text-muted small">No permissions assigned to this role yet.</p>
+            }
+            <table class="table table-sm table-hover align-middle mb-4">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Permission</th>
+                        <th>Module</th>
+                        <th style="width:100px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var rp in Model)
+                    {
+                        <tr>
+                            <td><code>@rp.Permission?.Name</code></td>
+                            <td><span class="badge bg-secondary">@rp.Permission?.Module</span></td>
+                            <td>
+                                <form asp-action="RevokePermission" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="roleId" value="@roleId" />
+                                    <input type="hidden" name="permissionName" value="@rp.Permission?.Name" />
+                                    <button class="btn btn-xs btn-outline-danger btn-sm"
+                                            onclick="return confirm('Revoke this permission?')">Revoke</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- Available Permissions -->
+            @if (availablePermissions.Any())
+            {
+                <h6 class="fw-bold text-muted mb-2"><i class="fas fa-plus-circle me-1"></i> Available Permissions</h6>
+                <table class="table table-sm table-hover align-middle">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Permission</th>
+                            <th>Module</th>
+                            <th style="width:100px">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in availablePermissions)
+                        {
+                            <tr>
+                                <td><code>@p.Name</code></td>
+                                <td><span class="badge bg-secondary">@p.Module</span></td>
+                                <td>
+                                    <form asp-action="GrantPermission" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="roleId" value="@roleId" />
+                                        <input type="hidden" name="permissionName" value="@p.Name" />
+                                        <button class="btn btn-xs btn-outline-success btn-sm">Grant</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+        else
+        {
+            <p class="text-muted text-center">Select a role and click Load to manage its permissions.</p>
+        }
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

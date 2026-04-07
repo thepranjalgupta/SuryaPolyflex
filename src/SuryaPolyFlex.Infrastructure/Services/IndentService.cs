@@ -12,11 +12,13 @@ public class IndentService : IIndentService
 {
     private readonly AppDbContext _context;
     private readonly INumberSequenceService _numberService;
+    private readonly IApprovalService _approvalService;
 
-    public IndentService(AppDbContext context, INumberSequenceService numberService)
+    public IndentService(AppDbContext context, INumberSequenceService numberService, IApprovalService approvalService)
     {
-        _context       = context;
+        _context = context;
         _numberService = numberService;
+        _approvalService = approvalService;
     }
 
     public async Task<List<IndentDto>> GetAllAsync(string? status = null)
@@ -176,6 +178,10 @@ public class IndentService : IIndentService
         });
 
         await _context.SaveChangesAsync();
+
+        await _approvalService.CreateApprovalTransactionAsync(
+            "INDENTS", indent.Id, userId, indent.DepartmentId);
+
         return (true, "Indent submitted for approval.");
     }
 
@@ -190,6 +196,13 @@ public class IndentService : IIndentService
         if (indent.Status != IndentStatus.PendingApproval)
             return (false, "Indent is not pending approval.");
 
+        var transaction = await _approvalService.GetApprovalTransactionAsync("INDENTS", indent.Id);
+        if (transaction == null)
+            return (false, "No approval transaction found for this indent.");
+
+        if (transaction.Status != ApprovalStatus.Pending)
+            return (false, "This indent is not pending approval.");
+
         if (dto.Action == "Approve")
         {
             // Update approved quantities
@@ -200,12 +213,23 @@ public class IndentService : IIndentService
                     indentItem.ApprovedQty = item.ApprovedQty;
             }
 
-            indent.Status      = IndentStatus.Approved;
-            indent.ApprovedById = userId;
-            indent.ApprovedAt  = DateTime.UtcNow;
+            var updatedTransaction = await _approvalService.ApproveAsync(userId, "INDENTS", indent.Id, transaction.CurrentStep);
+
+            if (updatedTransaction.Status == ApprovalStatus.Approved)
+            {
+                indent.Status = IndentStatus.Approved;
+                indent.ApprovedById = userId;
+                indent.ApprovedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                // Still pending next step
+                indent.Status = IndentStatus.PendingApproval;
+            }
         }
         else
         {
+            await _approvalService.RejectAsync(userId, "INDENTS", indent.Id, dto.Remarks ?? "");
             indent.Status = IndentStatus.Rejected;
         }
 

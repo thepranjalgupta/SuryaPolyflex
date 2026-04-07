@@ -73,6 +73,7 @@ public static class Permissions
         public const string Adjust = "STOCK_ADJUST";
         public const string Issue  = "STOCK_ISSUE";
         public const string Export = "STOCK_EXPORT";
+        public const string Ledger = "STOCK_LEDGER";
     }
 
     public static class Customers
@@ -114,9 +115,10 @@ public static class Permissions
 
     public static class Production
     {
-        public const string View   = "PROD_VIEW";
-        public const string Create = "PROD_CREATE";
-        public const string Edit   = "PROD_EDIT";
+        public const string View        = "PROD_VIEW";
+        public const string Create      = "PROD_CREATE";
+        public const string Edit        = "PROD_EDIT";
+        public const string Machines     = "PROD_MACHINES";
     }
 
     public static class Dispatch
@@ -136,5 +138,43 @@ public static class Permissions
     public static class AuditLogs
     {
         public const string View = "AUDIT_VIEW";
+    }
+
+    public static class Leads
+    {
+        public const string View    = "LEADS_VIEW";
+        public const string Create  = "LEADS_CREATE";
+        public const string Edit    = "LEADS_EDIT";
+        public const string Delete  = "LEADS_DELETE";
+        public const string Convert = "LEADS_CONVERT";
+    }
+
+    public static class SalesReturns
+    {
+        public const string View    = "SRET_VIEW";
+        public const string Create  = "SRET_CREATE";
+        public const string Approve = "SRET_APPROVE";
+    }
+
+    public static class GateEntry
+    {
+        public const string View   = "GATE_VIEW";
+        public const string Create = "GATE_CREATE";
+        public const string Edit   = "GATE_EDIT";
+    }
+
+    public static class MaterialIssue
+    {
+        public const string View   = "MI_VIEW";
+        public const string Create = "MI_CREATE";
+        public const string Edit   = "MI_EDIT";
+    }
+
+    public static class Warehouses
+    {
+        public const string View   = "WH_VIEW";
+        public const string Create = "WH_CREATE";
+        public const string Edit   = "WH_EDIT";
+        public const string Delete = "WH_DELETE";
     }
 }

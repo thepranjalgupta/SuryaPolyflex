@@ -14,15 +14,18 @@ public class PurchaseOrderService : IPurchaseOrderService
     private readonly AppDbContext _context;
     private readonly INumberSequenceService _numberService;
     private readonly IIndentService _indentService;
+    private readonly IApprovalService _approvalService;
 
     public PurchaseOrderService(
         AppDbContext context,
         INumberSequenceService numberService,
-        IIndentService indentService)
+        IIndentService indentService,
+        IApprovalService approvalService)
     {
-        _context       = context;
+        _context = context;
         _numberService = numberService;
         _indentService = indentService;
+        _approvalService = approvalService;
     }
 
     public async Task<List<PurchaseOrderDto>> GetAllAsync(string? status = null)
@@ -81,7 +84,7 @@ public class PurchaseOrderService : IPurchaseOrderService
     }
 
     public async Task<(bool Success, string Message, int POId)> CreateAsync(
-        CreatePODto dto, string userName)
+        CreatePODto dto, string userId, string userName)
     {
         if (dto.Items == null || !dto.Items.Any())
             return (false, "Add at least one item.", 0);
@@ -148,6 +151,16 @@ public class PurchaseOrderService : IPurchaseOrderService
         });
 
         await _context.SaveChangesAsync();
+
+        int? approvalDeptId = null;
+        if (dto.IndentId.HasValue)
+        {
+            var indent = await _context.Indents.FindAsync(dto.IndentId.Value);
+            approvalDeptId = indent?.DepartmentId;
+        }
+
+        await _approvalService.CreateApprovalTransactionAsync("PO", po.Id, userId, approvalDeptId);
+
         return (true, $"Purchase Order {poNumber} created successfully.", po.Id);
     }
 
@@ -159,24 +172,46 @@ public class PurchaseOrderService : IPurchaseOrderService
         if (po.Status != PurchaseOrderStatus.Open)
             return (false, "Only Open POs can be approved.");
 
-        po.Status       = PurchaseOrderStatus.Approved;
-        po.ApprovedById = userId;
-        po.ApprovedAt   = DateTime.UtcNow;
-        po.UpdatedAt    = DateTime.UtcNow;
-        po.UpdatedBy    = userName;
+        var transaction = await _approvalService.GetApprovalTransactionAsync("PO", po.Id);
+        if (transaction == null)
+            return (false, "No approval transaction exists for this PO.");
 
-        _context.WorkflowActions.Add(new WorkflowAction
+        try
         {
-            ModuleCode   = "PO",
-            ReferenceId  = po.Id,
-            Action       = "Approved",
-            ActionById   = userId,
-            ActionByName = userName,
-            ActionAt     = DateTime.UtcNow
-        });
+            var updatedTransaction = await _approvalService.ApproveAsync(userId, "PO", po.Id, transaction.CurrentStep);
 
-        await _context.SaveChangesAsync();
-        return (true, "PO approved successfully.");
+            if (updatedTransaction.Status == ApprovalStatus.Approved)
+            {
+                po.Status       = PurchaseOrderStatus.Approved;
+                po.ApprovedById = userId;
+                po.ApprovedAt   = DateTime.UtcNow;
+            }
+            else
+            {
+                // remains in open/pending as workflow continues
+                po.Status = PurchaseOrderStatus.Open;
+            }
+
+            po.UpdatedAt = DateTime.UtcNow;
+            po.UpdatedBy = userName;
+
+            _context.WorkflowActions.Add(new WorkflowAction
+            {
+                ModuleCode   = "PO",
+                ReferenceId  = po.Id,
+                Action       = "Approved",
+                ActionById   = userId,
+                ActionByName = userName,
+                ActionAt     = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+            return (true, "PO approved successfully.");
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message);
+        }
     }
 
     public async Task<(bool Success, string Message)> CancelPOAsync(

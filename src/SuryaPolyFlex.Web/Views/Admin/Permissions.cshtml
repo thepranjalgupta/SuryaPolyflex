@@ -1,0 +1,52 @@
+@model List<SuryaPolyFlex.Domain.Entities.Core.Permission>
+@{ ViewData["Title"] = "Permissions"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="fas fa-key me-2 text-primary"></i>Permissions</h4>
+    <a asp-action="Index" class="btn btn-sm btn-outline-dark">
+        <i class="fas fa-cogs me-1"></i> Admin Home
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">@TempData["Success"]<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Module</th>
+                    <th>Action</th>
+                    <th>Description</th>
+                    <th style="width:120px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-muted">No permissions found.</td></tr>
+                }
+                @foreach (var p in Model.OrderBy(x => x.Module))
+                {
+                    <tr>
+                        <td><code>@p.Name</code></td>
+                        <td><span class="badge bg-secondary">@p.Module</span></td>
+                        <td><span class="badge bg-info">@p.Action</span></td>
+                        <td class="small text-muted">@p.Description</td>
+                        <td>
+                            <a asp-action="Permission" asp-route-id="@p.Id" class="btn btn-xs btn-outline-primary btn-sm">View</a>
+                            <a asp-action="Rules" asp-route-permissionId="@p.Id" class="btn btn-xs btn-outline-info btn-sm">Rules</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

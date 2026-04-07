@@ -79,9 +79,10 @@ public class PurchaseOrdersController : Controller
             return View(dto);
         }
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
         var userName = User.Identity!.Name!;
         var (success, message, poId) =
-            await _poService.CreateAsync(dto, userName);
+            await _poService.CreateAsync(dto, userId, userName);
 
         if (!success)
         {

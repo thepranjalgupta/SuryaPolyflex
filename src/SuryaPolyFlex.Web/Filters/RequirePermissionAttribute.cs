@@ -43,7 +43,7 @@ public class PermissionFilter : IAsyncAuthorizationFilter
             return;
         }
 
-        var hasPermission = await _permissionService.HasPermissionAsync(userId, _permission);
+        var hasPermission = await _permissionService.HasPermissionAsync(userId, _permission, null);
         if (!hasPermission)
         {
             context.Result = new RedirectToActionResult("AccessDenied", "Auth", null);

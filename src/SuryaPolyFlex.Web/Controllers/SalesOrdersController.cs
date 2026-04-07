@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SuryaPolyFlex.Application.Common;
 using SuryaPolyFlex.Application.Features.Customers;
 using SuryaPolyFlex.Application.Features.Items;
 using SuryaPolyFlex.Application.Features.SalesOrders;
+using SuryaPolyFlex.Web.Filters;
 
 namespace SuryaPolyFlex.Web.Controllers;
 
@@ -24,6 +26,7 @@ public class SalesOrdersController : Controller
         _itemService     = itemService;
     }
 
+    [RequirePermission(Permissions.SalesOrders.View)]
     public async Task<IActionResult> Index(string? status)
     {
         ViewBag.Status = status;

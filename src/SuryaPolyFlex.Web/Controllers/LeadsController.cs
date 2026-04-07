@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SuryaPolyFlex.Application.Features.Customers;
 using SuryaPolyFlex.Application.Features.Leads;
+using SuryaPolyFlex.Application.Common;
+using SuryaPolyFlex.Web.Filters;
 
 namespace SuryaPolyFlex.Web.Controllers;
 
 [Authorize]
-public class LeadsController : Controller
+[RequirePermission(Permissions.Leads.View)]
+    public class LeadsController : Controller
 {
     private readonly ILeadService     _leadService;
     private readonly ICustomerService _customerService;
@@ -18,12 +21,14 @@ public class LeadsController : Controller
         _customerService = customerService;
     }
 
+    [RequirePermission(Permissions.Leads.View)]
     public async Task<IActionResult> Index(string? status)
     {
         ViewBag.Status = status;
         return View(await _leadService.GetAllAsync(status));
     }
 
+    [RequirePermission(Permissions.Leads.Create)]
     public async Task<IActionResult> Create()
     {
         await LoadCustomersAsync();
@@ -50,6 +55,7 @@ public class LeadsController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [RequirePermission(Permissions.Leads.Edit)]
     public async Task<IActionResult> Edit(int id)
     {
         var lead = await _leadService.GetByIdAsync(id);
@@ -83,6 +89,7 @@ public class LeadsController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [RequirePermission(Permissions.Leads.Convert)]
     public async Task<IActionResult> Convert(int id)
     {
         var (success, message) =

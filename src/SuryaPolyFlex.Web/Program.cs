@@ -35,6 +35,9 @@ builder.Services.AddHttpContextAccessor();
 // Audit interceptor
 builder.Services.AddScoped<AuditInterceptor>();
 
+// Memory cache
+builder.Services.AddMemoryCache();
+
 // Database
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
@@ -58,6 +61,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 
 // Application services
 builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IRuleEvaluationService, RuleEvaluationService>();
+builder.Services.AddScoped<IApprovalService, ApprovalService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IUserService, UserService>();

@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SuryaPolyFlex.Infrastructure.Data;
 
 #nullable disable
 
-namespace SuryaPolyFlex.Infrastructure.Data.Migrations
+namespace SuryaPolyFlex.Infrastructure.Migrations.Approval
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260402071847_ApprovalWorkflowAndRulesRefactor")]
+    partial class ApprovalWorkflowAndRulesRefactor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,9 +173,6 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AuthorityRole")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -827,52 +827,6 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("Rules", "security");
-                });
-
-            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Core.UserPermission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAllowed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("UserId", "PermissionId")
-                        .IsUnique();
-
-                    b.ToTable("UserPermissions", "security");
                 });
 
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Core.WorkflowAction", b =>
@@ -3396,25 +3350,6 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.Navigation("Permission");
                 });
 
-            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Core.UserPermission", b =>
-                {
-                    b.HasOne("SuryaPolyFlex.Domain.Entities.Core.Permission", "Permission")
-                        .WithMany()
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SuryaPolyFlex.Domain.Entities.Core.ApplicationUser", "User")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Dispatch.ChallanItem", b =>
                 {
                     b.HasOne("SuryaPolyFlex.Domain.Entities.Dispatch.DeliveryChallan", "Challan")
@@ -3975,11 +3910,6 @@ namespace SuryaPolyFlex.Infrastructure.Data.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("SalesReturn");
-                });
-
-            modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Core.ApplicationUser", b =>
-                {
-                    b.Navigation("UserPermissions");
                 });
 
             modelBuilder.Entity("SuryaPolyFlex.Domain.Entities.Core.ApprovalWorkflow", b =>
